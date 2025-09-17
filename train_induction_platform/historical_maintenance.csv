@@ -1,0 +1,51 @@
+maintenance_id,trainset_id,maintenance_date,maintenance_type,duration_hours,cost,components_replaced,technician_id,priority,downtime_days,preventive_flag,failure_severity
+MTN-0001,KMRL-029,2024-03-13,Corrective,5,36423,Electrical,TECH-010,Low,2,False,6
+MTN-0002,KMRL-065,2024-08-11,Preventive,6,14513,"Bogies, Electrical",TECH-020,High,0,True,2
+MTN-0003,KMRL-073,2024-10-08,Routine,2,5744,"Engines, Bogies",TECH-014,Low,2,False,3
+MTN-0004,KMRL-064,2024-08-04,Corrective,14,39798,"HVAC, Doors, Signalling",TECH-003,Low,4,False,5
+MTN-0005,KMRL-021,2024-04-30,Emergency,38,171750,"Doors, Electrical, Signalling",TECH-012,Critical,6,False,9
+MTN-0006,KMRL-017,2024-03-25,Routine,4,8960,HVAC,TECH-008,Medium,1,False,1
+MTN-0007,KMRL-013,2024-10-12,Corrective,10,76633,Signalling,TECH-006,High,5,False,7
+MTN-0008,KMRL-074,2024-02-24,Preventive,8,7610,Doors,TECH-016,Low,1,True,4
+MTN-0009,KMRL-012,2024-04-06,Emergency,23,106398,"Doors, HVAC",TECH-020,Critical,8,False,7
+MTN-0010,KMRL-037,2024-06-18,Routine,8,6761,Electrical,TECH-012,Critical,1,False,2
+MTN-0011,KMRL-047,2024-10-10,Emergency,11,199495,"Brakes, HVAC, Bogies, Electrical",TECH-018,High,6,False,9
+MTN-0012,KMRL-080,2024-08-31,Routine,3,6584,Bogies,TECH-012,Medium,1,False,3
+MTN-0013,KMRL-026,2024-07-22,Emergency,40,60552,"Electrical, Doors, HVAC",TECH-017,Critical,3,False,7
+MTN-0014,KMRL-020,2024-07-24,Preventive,4,15044,Bogies,TECH-010,High,1,True,2
+MTN-0015,KMRL-065,2024-06-04,Emergency,44,128588,"Doors, Electrical, Brakes, HVAC",TECH-019,High,10,False,7
+MTN-0016,KMRL-093,2024-09-04,Routine,6,12775,"Brakes, Bogies",TECH-016,Medium,1,False,2
+MTN-0017,KMRL-068,2024-08-05,Emergency,17,113490,"Brakes, HVAC, Doors",TECH-014,Medium,3,False,7
+MTN-0018,KMRL-053,2024-09-05,Preventive,5,13221,"Electrical, Brakes",TECH-005,Medium,2,True,4
+MTN-0019,KMRL-072,2024-03-02,Emergency,41,148782,"Bogies, Doors, Signalling, Electrical, HVAC",TECH-009,Critical,8,False,8
+MTN-0020,KMRL-025,2024-01-21,Corrective,12,39562,"Electrical, Engines",TECH-016,High,2,False,6
+MTN-0021,KMRL-062,2024-03-14,Corrective,8,27987,"Signalling, Doors",TECH-005,High,5,False,7
+MTN-0022,KMRL-006,2024-02-11,Routine,4,12247,"HVAC, Engines",TECH-007,High,2,False,3
+MTN-0023,KMRL-072,2024-09-08,Corrective,6,27158,Brakes,TECH-017,Medium,5,False,5
+MTN-0024,KMRL-082,2024-01-14,Routine,2,11771,,TECH-005,Low,1,False,4
+MTN-0025,KMRL-071,2024-12-06,Emergency,38,175160,"Doors, Electrical, Brakes, Bogies",TECH-019,Medium,6,False,9
+MTN-0026,KMRL-069,2024-10-06,Preventive,5,19454,Signalling,TECH-016,Medium,0,True,1
+MTN-0027,KMRL-096,2024-02-12,Routine,2,9888,Doors,TECH-015,Critical,2,False,1
+MTN-0028,KMRL-018,2024-06-02,Emergency,25,100544,"Electrical, HVAC, Doors",TECH-006,Low,4,False,9
+MTN-0029,KMRL-095,2024-03-08,Corrective,13,64197,"Signalling, Electrical, HVAC",TECH-014,High,2,False,5
+MTN-0030,KMRL-012,2024-04-10,Routine,3,7303,,TECH-001,High,1,False,3
+MTN-0031,KMRL-050,2024-01-15,Emergency,25,136409,"Electrical, Doors, Engines, Brakes",TECH-004,Critical,7,False,7
+MTN-0032,KMRL-040,2024-12-07,Emergency,40,131521,"Bogies, Engines, Electrical, Signalling",TECH-016,Medium,4,False,9
+MTN-0033,KMRL-059,2024-07-24,Corrective,10,66002,"Signalling, Electrical, Engines",TECH-008,Low,5,False,7
+MTN-0034,KMRL-068,2024-05-03,Corrective,5,56973,"Bogies, Engines, Signalling",TECH-018,Medium,1,False,4
+MTN-0035,KMRL-022,2024-03-03,Emergency,15,103844,"Signalling, Brakes, HVAC, Engines, Doors",TECH-014,Critical,10,False,7
+MTN-0036,KMRL-073,2024-10-16,Emergency,27,55706,"Electrical, Engines",TECH-019,Low,9,False,9
+MTN-0037,KMRL-006,2024-04-21,Corrective,15,24178,HVAC,TECH-002,High,5,False,4
+MTN-0038,KMRL-053,2024-12-18,Preventive,8,15510,HVAC,TECH-015,Critical,2,True,4
+MTN-0039,KMRL-049,2024-10-28,Preventive,7,19094,,TECH-018,Critical,1,True,1
+MTN-0040,KMRL-068,2024-11-21,Preventive,8,5056,Electrical,TECH-018,Critical,0,True,3
+MTN-0041,KMRL-069,2024-03-30,Preventive,3,12546,Engines,TECH-004,Low,1,True,2
+MTN-0042,KMRL-085,2024-04-19,Routine,3,8376,"Brakes, HVAC",TECH-020,Low,0,False,1
+MTN-0043,KMRL-032,2024-10-09,Emergency,36,111430,"Bogies, Doors, Engines",TECH-019,High,6,False,7
+MTN-0044,KMRL-074,2024-07-20,Corrective,7,39776,"Doors, Signalling",TECH-002,Medium,2,False,5
+MTN-0045,KMRL-081,2024-08-30,Emergency,43,179924,"Signalling, Bogies, Doors, HVAC, Engines",TECH-005,High,3,False,9
+MTN-0046,KMRL-049,2024-12-20,Emergency,23,109072,"Brakes, Bogies, HVAC, Electrical, Doors",TECH-017,Medium,7,False,8
+MTN-0047,KMRL-050,2024-01-19,Corrective,7,41644,"Brakes, Bogies",TECH-007,Low,1,False,7
+MTN-0048,KMRL-035,2024-03-29,Routine,8,6192,Engines,TECH-011,High,0,False,2
+MTN-0049,KMRL-002,2024-01-03,Preventive,7,6922,,TECH-020,Medium,2,True,4
+MTN-0050,KMRL-051,2024-01-17,Corrective,16,38550,"Electrical, Doors, Signalling",TECH-009,High,4,False,7

@@ -1,0 +1,17 @@
+campaign_id,advertiser,category,subcategory,duration_days,investment,impressions,engagement_rate,revenue_generated,roi,target_demographic,peak_hour_performance,compartment_type
+AD-001,Apple,Technology,Smartphones,30,150000,250000,0.045,180000,0.20,Professionals,1.8,Standard
+AD-002,Samsung,Technology,Smartphones,45,200000,320000,0.038,225000,0.125,Professionals,1.6,Standard
+AD-003,McDonald's,Food,Quick Service,60,80000,180000,0.062,95000,0.1875,Students,2.1,Accessible
+AD-004,Pepsi,Beverages,Cold Drinks,90,60000,150000,0.055,75000,0.25,Students,1.9,Accessible
+AD-005,L'Oréal,Beauty,Cosmetics,45,120000,200000,0.048,140000,0.166,Women,1.7,Women
+AD-006,Toyota,Automotive,Cars,90,300000,400000,0.035,320000,0.067,Professionals,1.4,Standard
+AD-007,Flipkart,E-commerce,Online Shopping,60,180000,280000,0.042,210000,0.167,Students,1.8,Standard
+AD-008,Airtel,Telecom,Mobile Plans,120,100000,220000,0.058,130000,0.30,Professionals,1.9,Standard
+AD-009,Zara,Fashion,Clothing,45,140000,190000,0.041,160000,0.143,Women,1.6,Women
+AD-010,Amazon,E-commerce,Online Shopping,75,220000,350000,0.039,250000,0.136,Students,1.7,Standard
+AD-011,BSNL,Telecom,Broadband,180,80000,160000,0.052,95000,0.1875,Senior Citizens,1.5,Accessible
+AD-012,Swiggy,Food,Food Delivery,90,160000,240000,0.067,190000,0.1875,Students,2.0,Accessible
+AD-013,BMW,Automotive,Luxury Cars,60,400000,180000,0.028,350000,-0.125,Professionals,1.3,Premium
+AD-014,Netflix,Entertainment,Streaming,120,200000,300000,0.045,230000,0.15,Students,1.8,Standard
+AD-015,H&M,Fashion,Fast Fashion,60,130000,170000,0.044,150000,0.154,Women,1.6,Women
+
