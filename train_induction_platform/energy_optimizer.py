@@ -56,9 +56,9 @@ class EnergyConsumptionOptimizer:
         self.feature_data['renewable_energy'] = self.feature_data['energy_consumption_kwh'] * self.feature_data['renewable_percentage'] / 100
         self.feature_data['non_renewable_energy'] = self.feature_data['energy_consumption_kwh'] * (1 - self.feature_data['renewable_percentage'] / 100)
         
-        # Define feature columns for ML
+        # Define feature columns for ML (exclude datetime columns)
         self.feature_columns = [
-            'distance_traveled_km', 'passengers_carried', 'month', 'season_encoded',
+            'distance_traveled_km', 'passengers_carried', 'season_encoded',
             'maintenance_impact', 'efficiency_score', 'renewable_percentage'
         ]
         
@@ -112,11 +112,10 @@ class EnergyConsumptionOptimizer:
             return None
         
         try:
-            # Prepare input features
+            # Prepare input features (matching the feature_columns order)
             features = []
-            features.append(distance_km)
-            features.append(passengers)
-            features.append(month)
+            features.append(distance_km)  # distance_traveled_km
+            features.append(passengers)  # passengers_carried
             
             # Season encoding
             season_map = {12: 'Winter', 1: 'Winter', 2: 'Winter',
@@ -129,17 +128,17 @@ class EnergyConsumptionOptimizer:
                 season_encoded = self.label_encoders['season'].transform([season])[0]
             else:
                 season_encoded = 0
-            features.append(season_encoded)
+            features.append(season_encoded)  # season_encoded
             
-            features.append(maintenance_impact)
+            features.append(maintenance_impact)  # maintenance_impact
             
             # Efficiency score (estimated)
             efficiency_score = passengers / max(distance_km, 1)
-            features.append(efficiency_score)
+            features.append(efficiency_score)  # efficiency_score
             
             # Renewable percentage (estimated based on month - higher in summer)
             renewable_pct = 30 + (month - 6) * 2 if 6 <= month <= 8 else 30
-            features.append(renewable_pct)
+            features.append(renewable_pct)  # renewable_percentage
             
             # Scale and predict
             features_scaled = self.scaler.transform([features])
@@ -162,11 +161,10 @@ class EnergyConsumptionOptimizer:
             if predicted_energy is None:
                 return None
             
-            # Prepare features for cost model
+            # Prepare features for cost model (matching feature_columns order)
             features = []
-            features.append(distance_km)
-            features.append(passengers)
-            features.append(month)
+            features.append(distance_km)  # distance_traveled_km
+            features.append(passengers)  # passengers_carried
             
             # Season encoding
             season_map = {12: 'Winter', 1: 'Winter', 2: 'Winter',
@@ -179,11 +177,11 @@ class EnergyConsumptionOptimizer:
                 season_encoded = self.label_encoders['season'].transform([season])[0]
             else:
                 season_encoded = 0
-            features.append(season_encoded)
+            features.append(season_encoded)  # season_encoded
             
-            features.append(maintenance_impact)
+            features.append(maintenance_impact)  # maintenance_impact
             features.append(passengers / max(distance_km, 1))  # efficiency_score
-            features.append(30 + (month - 6) * 2 if 6 <= month <= 8 else 30)  # renewable_pct
+            features.append(30 + (month - 6) * 2 if 6 <= month <= 8 else 30)  # renewable_percentage
             
             features_scaled = self.scaler.transform([features])
             predicted_cost = self.cost_model.predict(features_scaled)[0]
@@ -200,11 +198,10 @@ class EnergyConsumptionOptimizer:
             return None
         
         try:
-            # Prepare features
+            # Prepare features (matching feature_columns order)
             features = []
-            features.append(distance_km)
-            features.append(passengers)
-            features.append(month)
+            features.append(distance_km)  # distance_traveled_km
+            features.append(passengers)  # passengers_carried
             
             # Season encoding
             season_map = {12: 'Winter', 1: 'Winter', 2: 'Winter',
@@ -217,11 +214,11 @@ class EnergyConsumptionOptimizer:
                 season_encoded = self.label_encoders['season'].transform([season])[0]
             else:
                 season_encoded = 0
-            features.append(season_encoded)
+            features.append(season_encoded)  # season_encoded
             
             features.append(1.0)  # maintenance_impact
             features.append(passengers / max(distance_km, 1))  # efficiency_score
-            features.append(30)  # current renewable_pct
+            features.append(30)  # renewable_percentage
             
             features_scaled = self.scaler.transform([features])
             optimal_renewable = self.renewable_model.predict(features_scaled)[0]
