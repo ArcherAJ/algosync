@@ -15,23 +15,45 @@ def create_fleet_status_tab():
     # Get fleet insights
     fleet_insights = system_manager.get_fleet_insights()
     
+    # Always show basic metrics, even if fleet insights are not available
     if fleet_insights:
         # Overall metrics
         overall = fleet_insights['overall_metrics']
-        col1, col2, col3, col4, col5, col6 = st.columns(6)
+        col1, col2, col3, col4, col5 = st.columns(5)
         
         with col1:
-            st.metric("Total Trainsets", overall['total_trainsets'])
+            st.metric("Total Trainsets", overall.get('total_trainsets', len(trainsets)))
         with col2:
-            st.metric("Avg Performance", f"{overall['avg_performance']:.1f}")
+            st.metric("Avg Performance", f"{overall.get('avg_performance', 0):.1f}")
         with col3:
-            st.metric("High Performers", overall['high_performers'])
+            st.metric("High Performers", overall.get('high_performers', 0))
         with col4:
-            st.metric("Anomalies Detected", overall['anomaly_count'])
+            st.metric("Anomalies Detected", overall.get('anomaly_count', 0))
         with col5:
-            st.metric("⏰ Avg Punctuality", f"{overall['avg_punctuality']:.2f}%")
-        with col6:
-            st.metric("🚀 On-Time Performance", f"{overall['avg_on_time']:.2f}%")
+            # Calculate punctuality from trainsets if not available in insights
+            if 'avg_punctuality' in overall:
+                punctuality = overall['avg_punctuality']
+            else:
+                punctuality_scores = [t['operational'].get('punctuality_score', 99.5) for t in trainsets]
+                punctuality = sum(punctuality_scores) / len(punctuality_scores) if punctuality_scores else 99.5
+            st.metric("⏰ Avg Punctuality", f"{punctuality:.2f}%")
+    else:
+        # Fallback metrics when fleet insights are not available
+        col1, col2, col3, col4, col5 = st.columns(5)
+        
+        with col1:
+            st.metric("Total Trainsets", len(trainsets))
+        with col2:
+            st.metric("Avg Performance", "N/A")
+        with col3:
+            st.metric("High Performers", "N/A")
+        with col4:
+            st.metric("Anomalies Detected", "N/A")
+        with col5:
+            # Calculate punctuality from trainsets
+            punctuality_scores = [t['operational'].get('punctuality_score', 99.5) for t in trainsets]
+            punctuality = sum(punctuality_scores) / len(punctuality_scores) if punctuality_scores else 99.5
+            st.metric("⏰ Avg Punctuality", f"{punctuality:.2f}%")
     
     # Filters
     col1, col2, col3 = st.columns(3)
@@ -128,50 +150,28 @@ def create_fleet_status_tab():
         st.plotly_chart(fig, use_container_width=True)
     
     # Punctuality Analysis Section
-    if fleet_insights:
-        st.subheader("⏰ Punctuality Analysis")
-        overall = fleet_insights['overall_metrics']
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric("Excellent (≥99.7%)", overall['punctuality_excellent'])
-        with col2:
-            st.metric("Good (99.5-99.7%)", overall['punctuality_good'])
-        with col3:
-            st.metric("Average Punctuality", f"{overall['avg_punctuality']:.2f}%")
-        with col4:
-            st.metric("On-Time Performance", f"{overall['avg_on_time']:.2f}%")
-        
-        # Punctuality distribution chart
-        punctuality_data = []
-        for trainset in filtered_trainsets:
-            punctuality_data.append({
-                'trainset_id': trainset['id'],
-                'punctuality': trainset['operational'].get('punctuality_score', 99.5),
-                'depot': trainset['depot'],
-                'status': trainset['recommendation']
-            })
-        
-        if punctuality_data:
-            punct_df = pd.DataFrame(punctuality_data)
-            
-            # Create punctuality distribution chart
-            fig = px.histogram(punct_df, x='punctuality', 
-                             title="Punctuality Score Distribution",
-                             labels={'punctuality': 'Punctuality Score (%)', 'count': 'Number of Trainsets'},
-                             nbins=20)
-            fig.add_vline(x=99.5, line_dash="dash", line_color="green", 
-                         annotation_text="Target: 99.5%")
-            fig.add_vline(x=99.7, line_dash="dash", line_color="blue", 
-                         annotation_text="Excellent: 99.7%")
-            st.plotly_chart(fig, use_container_width=True)
-            
-            # Top punctuality performers
-            st.write("**🏆 Top Punctuality Performers:**")
-            top_punctuality = punct_df.nlargest(10, 'punctuality')
-            st.dataframe(top_punctuality[['trainset_id', 'punctuality', 'depot', 'status']], 
-                        use_container_width=True)
+    st.subheader("⏰ Punctuality Analysis")
+    
+    # Calculate punctuality metrics from trainsets
+    punctuality_scores = [t['operational'].get('punctuality_score', 99.5) for t in trainsets]
+    
+    if punctuality_scores:
+        avg_punctuality = sum(punctuality_scores) / len(punctuality_scores)
+        punctuality_excellent = len([s for s in punctuality_scores if s >= 99.7])
+        punctuality_good = len([s for s in punctuality_scores if 99.5 <= s < 99.7])
+    else:
+        avg_punctuality = 99.5
+        punctuality_excellent = 0
+        punctuality_good = 0
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.metric("Excellent (≥99.7%)", punctuality_excellent)
+    with col2:
+        st.metric("Good (99.5-99.7%)", punctuality_good)
+    with col3:
+        st.metric("Average Punctuality", f"{avg_punctuality:.2f}%")
     
     # AI Recommendations
     if fleet_insights and fleet_insights.get('recommendations'):
