@@ -11,6 +11,7 @@ from frontend.analytics import create_analytics_tab
 from frontend.maps import create_map
 from frontend.timetable_f import create_timetable_tab
 from frontend.passenger_demand import create_passenger_demand_tab
+from frontend.train_tracking import create_train_tracking_tab
 
 
 
@@ -30,17 +31,37 @@ def create_streamlit_frontend():
         initial_sidebar_state="expanded"
     )
     
-    # Enhanced Custom CSS with modern design
+    # Ultra-Modern Vibrant CSS Design
     st.markdown("""
     <style>
-    /* Import Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+    /* Import Premium Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
     
-    /* Global Styles */
+    /* CSS Variables for Dynamic Theming */
+    :root {
+        --primary-gradient: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffd23f 100%);
+        --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --accent-gradient: linear-gradient(135deg, #00d4aa 0%, #00a8cc 100%);
+        --success-gradient: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        --warning-gradient: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        --danger-gradient: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+        --glass-bg: rgba(255, 255, 255, 0.25);
+        --glass-border: rgba(255, 255, 255, 0.18);
+        --shadow-primary: 0 8px 32px rgba(255, 107, 53, 0.3);
+        --shadow-secondary: 0 8px 32px rgba(102, 126, 234, 0.3);
+        --shadow-accent: 0 8px 32px rgba(0, 212, 170, 0.3);
+    }
+    
+    /* Global Styles with Glassmorphism */
     .main {
         font-family: 'Inter', sans-serif;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.3) 0%, transparent 50%),
+            linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
+        position: relative;
     }
     
     /* Animated Background */
@@ -773,7 +794,11 @@ def create_streamlit_frontend():
             'service_target': service_target,
             'max_ibl': max_ibl,
             'branding_priority': st.selectbox("Branding Priority", ["Low", "Medium", "High"]),
-            'maintenance_buffer': st.slider("Maintenance Buffer (days)", 1, 7, 3)
+            'maintenance_buffer': st.slider("Maintenance Buffer (days)", 1, 7, 3),
+            # Timetable-specific constraints
+            'min_trains_per_slot': st.slider("Min Trains per Slot", 1, 5, 2),
+            'max_trains_per_slot': st.slider("Max Trains per Slot", 5, 15, 8),
+            'peak_hour_multiplier': st.slider("Peak Hour Multiplier", 1.2, 2.5, 1.8)
         }
         # Run optimization
         if st.button("🚀 Run AI Optimization", type="primary"):
@@ -796,10 +821,10 @@ def create_streamlit_frontend():
         for source, status in st.session_state.system_manager.data_integrator.data_sources.items():
             status_icon = "🟢" if status['connected'] else "🔴"
             st.write(f"{status_icon} {source.replace('_', ' ').title()}")
-    # Main dashboard tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
+    # Ultra-Modern Vibrant Dashboard Tabs
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
         "📊 Dashboard", "🚆 Fleet Status", "🔧 Maintenance", 
-        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable", "🚆 Passenger Demand"
+        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable", "🚆 Passenger Demand", "🚆 Train Tracking"
     ])
     with tab1:
         create_dashboard_tab()
@@ -819,3 +844,5 @@ def create_streamlit_frontend():
         create_timetable_tab()
     with tab9:
         create_passenger_demand_tab()
+    with tab10:
+        create_train_tracking_tab()

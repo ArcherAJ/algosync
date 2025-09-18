@@ -14,7 +14,8 @@ from weather_integrator import WeatherDataIntegrator
 from iot_sensor_manager import IoTSensorManager
 from smart_station_manager import SmartStationManager
 
-from timetable_b import TimetableGenerator
+from ai_timetable_optimizer import AITimetableOptimizer
+from train_tracker import TrainTracker
 
 class SystemIntegrationManager:
     def __init__(self):
@@ -34,6 +35,7 @@ class SystemIntegrationManager:
         self.weather_integrator = WeatherDataIntegrator()
         self.iot_manager = IoTSensorManager()
         self.station_manager = SmartStationManager()
+        self.train_tracker = TrainTracker()
         
         self.last_optimization_time = None
         self.optimization_history = []
@@ -78,8 +80,11 @@ class SystemIntegrationManager:
             'data_updates': update_count,
             'processing_time': round(time.time() - start_time, 2)
         })
-        # Check for alerts
-        alerts = self.alert_manager.check_alerts(optimized_trainsets, performance_metrics)
+        # Check for collision alerts from train tracking
+        collision_alerts = self.train_tracker.check_and_get_collision_alerts()
+        
+        # Check for alerts including collision alerts
+        alerts = self.alert_manager.check_alerts(optimized_trainsets, performance_metrics, collision_alerts)
         # Store in history
         optimization_record = {
             'timestamp': datetime.now(),
@@ -150,8 +155,8 @@ class SystemIntegrationManager:
         results.append(('evening', evening_result))
         return results
     def generate_timetable(self, trainsets, constraints):
-        timetable_gen = TimetableGenerator()
-        return timetable_gen.generate_timetable(trainsets, constraints)
+        timetable_gen = AITimetableOptimizer()
+        return timetable_gen.optimize_timetable(trainsets, constraints)
     def get_ml_insights(self):
         """Get comprehensive ML insights from all modules"""
         insights = {
@@ -193,6 +198,10 @@ class SystemIntegrationManager:
     def get_station_summary(self):
         """Get smart station summary"""
         return self.station_manager.get_fleet_station_summary()
+    
+    def get_collision_alerts(self):
+        """Get collision alerts from train tracking"""
+        return self.train_tracker.check_and_get_collision_alerts()
     
     def simulate_real_time_updates(self):
         """Simulate real-time updates for all systems"""

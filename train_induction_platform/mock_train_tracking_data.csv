@@ -1,0 +1,61 @@
+timestamp,trainset_id,current_station,next_station,route,status,position_lat,position_lon,speed_kmh,direction,delay_minutes,passenger_count,capacity,utilization_percent,estimated_arrival,estimated_departure,depot,ai_score,reliability_score,maintenance_due,weather_condition,temperature_c,humidity_percent
+2024-09-18 08:00:00,TRAIN_001,Aluva,Pulinchodu,Aluva-Kakkanad,moving,10.1076,76.3516,28.5,forward,0,245,300,81.7,08:05:00,08:08:00,Aluva Depot,87.3,92.1,No,Clear,28.5,75.2
+2024-09-18 08:00:00,TRAIN_002,Kalamassery,CUSAT,Aluva-Kakkanad,stationary,10.0799,76.3881,0.0,forward,0,189,300,63.0,08:03:00,08:06:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,26.8,82.1
+2024-09-18 08:00:00,TRAIN_003,MG Road,Maharaja's College,Aluva-Kakkanad,arriving,10.0295,76.4538,12.3,forward,0,267,300,89.0,08:02:00,08:05:00,Aluva Depot,84.2,94.7,No,Clear,29.1,68.9
+2024-09-18 08:00:00,TRAIN_004,Vytilla,Thaikoodam,Aluva-Kakkanad,departing,10.0015,76.4903,8.7,forward,0,156,300,52.0,08:04:00,08:07:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,24.2,88.5
+2024-09-18 08:00:00,TRAIN_005,Kakkanad,SN Junction,Aluva-Kakkanad,moving,9.9735,76.5268,31.2,reverse,0,278,300,92.7,08:06:00,08:09:00,Aluva Depot,85.6,93.8,No,Clear,30.3,71.4
+2024-09-18 08:05:00,TRAIN_001,Pulinchodu,Companypady,Aluva-Kakkanad,moving,10.1023,76.3589,29.8,forward,0,251,300,83.7,08:10:00,08:13:00,Aluva Depot,87.3,92.1,No,Clear,28.7,74.8
+2024-09-18 08:05:00,TRAIN_002,CUSAT,Pathadipalam,Aluva-Kakkanad,moving,10.0743,76.3954,27.4,forward,0,195,300,65.0,08:08:00,08:11:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,27.1,81.3
+2024-09-18 08:05:00,TRAIN_003,Maharaja's College,Ernakulam South,Aluva-Kakkanad,moving,10.0239,76.4611,26.9,forward,0,273,300,91.0,08:07:00,08:10:00,Aluva Depot,84.2,94.7,No,Clear,29.4,69.2
+2024-09-18 08:05:00,TRAIN_004,Thaikoodam,Petta,Aluva-Kakkanad,moving,9.9959,76.4976,30.1,forward,0,162,300,54.0,08:09:00,08:12:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,24.5,87.9
+2024-09-18 08:05:00,TRAIN_005,SN Junction,Vadakkekotta,Aluva-Kakkanad,moving,9.9791,76.5195,28.7,reverse,0,285,300,95.0,08:11:00,08:14:00,Aluva Depot,85.6,93.8,No,Clear,30.6,70.8
+2024-09-18 08:10:00,TRAIN_001,Companypady,Ambattukavu,Aluva-Kakkanad,moving,10.0967,76.3662,31.5,forward,0,258,300,86.0,08:15:00,08:18:00,Aluva Depot,87.3,92.1,No,Clear,29.0,73.5
+2024-09-18 08:10:00,TRAIN_002,Pathadipalam,Edapally,Aluva-Kakkanad,moving,10.0687,76.4027,29.2,forward,0,201,300,67.0,08:13:00,08:16:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,27.4,80.7
+2024-09-18 08:10:00,TRAIN_003,Ernakulam South,Kadavanthra,Aluva-Kakkanad,moving,10.0183,76.4684,27.8,forward,0,276,300,92.0,08:12:00,08:15:00,Aluva Depot,84.2,94.7,No,Clear,29.7,68.5
+2024-09-18 08:10:00,TRAIN_004,Petta,Vadakkekotta,Aluva-Kakkanad,moving,9.9903,76.5049,32.1,forward,0,168,300,56.0,08:14:00,08:17:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,24.8,87.2
+2024-09-18 08:10:00,TRAIN_005,Vadakkekotta,Petta,Aluva-Kakkanad,moving,9.9847,76.5122,30.4,reverse,0,292,300,97.3,08:16:00,08:19:00,Aluva Depot,85.6,93.8,No,Clear,30.9,70.1
+2024-09-18 08:15:00,TRAIN_001,Ambattukavu,Muttom,Aluva-Kakkanad,moving,10.0911,76.3735,28.9,forward,0,264,300,88.0,08:20:00,08:23:00,Aluva Depot,87.3,92.1,No,Clear,29.3,72.8
+2024-09-18 08:15:00,TRAIN_002,Edapally,Changampuzha Park,Aluva-Kakkanad,moving,10.0631,76.4100,30.7,forward,0,207,300,69.0,08:18:00,08:21:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,27.7,80.0
+2024-09-18 08:15:00,TRAIN_003,Kadavanthra,Elamkulam,Aluva-Kakkanad,moving,10.0127,76.4757,26.3,forward,0,279,300,93.0,08:17:00,08:20:00,Aluva Depot,84.2,94.7,No,Clear,30.0,67.8
+2024-09-18 08:15:00,TRAIN_004,Vadakkekotta,SN Junction,Aluva-Kakkanad,moving,9.9847,76.5122,29.6,forward,0,174,300,58.0,08:19:00,08:22:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,25.1,86.6
+2024-09-18 08:15:00,TRAIN_005,Petta,Thaikoodam,Aluva-Kakkanad,moving,9.9903,76.5049,31.8,reverse,0,298,300,99.3,08:21:00,08:24:00,Aluva Depot,85.6,93.8,No,Clear,31.2,69.4
+2024-09-18 08:20:00,TRAIN_001,Muttom,Kalamassery,Aluva-Kakkanad,moving,10.0855,76.3808,27.2,forward,0,271,300,90.3,08:25:00,08:28:00,Aluva Depot,87.3,92.1,No,Clear,29.6,72.1
+2024-09-18 08:20:00,TRAIN_002,Changampuzha Park,Palarivattom,Aluva-Kakkanad,moving,10.0575,76.4173,28.4,forward,0,213,300,71.0,08:23:00,08:26:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,28.0,79.3
+2024-09-18 08:20:00,TRAIN_003,Elamkulam,Vytilla,Aluva-Kakkanad,moving,10.0071,76.4830,25.7,forward,0,282,300,94.0,08:22:00,08:25:00,Aluva Depot,84.2,94.7,No,Clear,30.3,67.1
+2024-09-18 08:20:00,TRAIN_004,SN Junction,Kakkanad,Aluva-Kakkanad,moving,9.9791,76.5195,30.9,forward,0,180,300,60.0,08:24:00,08:27:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,25.4,85.9
+2024-09-18 08:20:00,TRAIN_005,Thaikoodam,Vytilla,Aluva-Kakkanad,moving,9.9959,76.4976,29.1,reverse,0,301,300,100.3,08:26:00,08:29:00,Aluva Depot,85.6,93.8,No,Clear,31.5,68.7
+2024-09-18 08:25:00,TRAIN_001,Kalamassery,CUSAT,Aluva-Kakkanad,moving,10.0799,76.3881,26.8,forward,0,277,300,92.3,08:30:00,08:33:00,Aluva Depot,87.3,92.1,No,Clear,29.9,71.4
+2024-09-18 08:25:00,TRAIN_002,Palarivattom,JLN Stadium,Aluva-Kakkanad,moving,10.0519,76.4246,27.6,forward,0,219,300,73.0,08:28:00,08:31:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,28.3,78.6
+2024-09-18 08:25:00,TRAIN_003,Vytilla,Thaikoodam,Aluva-Kakkanad,moving,10.0015,76.4903,24.9,forward,0,285,300,95.0,08:27:00,08:30:00,Aluva Depot,84.2,94.7,No,Clear,30.6,66.4
+2024-09-18 08:25:00,TRAIN_004,Kakkanad,SN Junction,Aluva-Kakkanad,moving,9.9735,76.5268,32.3,forward,0,186,300,62.0,08:29:00,08:32:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,25.7,85.2
+2024-09-18 08:25:00,TRAIN_005,Vytilla,Thaikoodam,Aluva-Kakkanad,moving,10.0015,76.4903,28.7,reverse,0,304,300,101.3,08:31:00,08:34:00,Aluva Depot,85.6,93.8,No,Clear,31.8,68.0
+2024-09-18 08:30:00,TRAIN_001,CUSAT,Pathadipalam,Aluva-Kakkanad,moving,10.0743,76.3954,25.4,forward,0,284,300,94.7,08:35:00,08:38:00,Aluva Depot,87.3,92.1,No,Clear,30.2,70.7
+2024-09-18 08:30:00,TRAIN_002,JLN Stadium,Kaloor,Aluva-Kakkanad,moving,10.0463,76.4319,26.1,forward,0,225,300,75.0,08:33:00,08:36:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,28.6,77.9
+2024-09-18 08:30:00,TRAIN_003,Thaikoodam,Petta,Aluva-Kakkanad,moving,9.9959,76.4976,23.8,forward,0,288,300,96.0,08:32:00,08:35:00,Aluva Depot,84.2,94.7,No,Clear,30.9,65.7
+2024-09-18 08:30:00,TRAIN_004,SN Junction,Vadakkekotta,Aluva-Kakkanad,moving,9.9791,76.5195,31.6,forward,0,192,300,64.0,08:34:00,08:37:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,26.0,84.5
+2024-09-18 08:30:00,TRAIN_005,Thaikoodam,Petta,Aluva-Kakkanad,moving,9.9959,76.4976,27.3,reverse,0,307,300,102.3,08:36:00,08:39:00,Aluva Depot,85.6,93.8,No,Clear,32.1,67.3
+2024-09-18 08:35:00,TRAIN_001,Pathadipalam,Edapally,Aluva-Kakkanad,moving,10.0687,76.4027,24.7,forward,0,291,300,97.0,08:40:00,08:43:00,Aluva Depot,87.3,92.1,No,Clear,30.5,70.0
+2024-09-18 08:35:00,TRAIN_002,Kaloor,Lissie,Aluva-Kakkanad,moving,10.0407,76.4392,25.9,forward,0,231,300,77.0,08:38:00,08:41:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,28.9,77.2
+2024-09-18 08:35:00,TRAIN_003,Petta,Vadakkekotta,Aluva-Kakkanad,moving,9.9903,76.5049,22.5,forward,0,291,300,97.0,08:37:00,08:40:00,Aluva Depot,84.2,94.7,No,Clear,31.2,65.0
+2024-09-18 08:35:00,TRAIN_004,Vadakkekotta,Petta,Aluva-Kakkanad,moving,9.9847,76.5122,30.8,forward,0,198,300,66.0,08:39:00,08:42:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,26.3,83.8
+2024-09-18 08:35:00,TRAIN_005,Petta,Vadakkekotta,Aluva-Kakkanad,moving,9.9903,76.5049,26.2,reverse,0,310,300,103.3,08:41:00,08:44:00,Aluva Depot,85.6,93.8,No,Clear,32.4,66.6
+2024-09-18 08:40:00,TRAIN_001,Edapally,Changampuzha Park,Aluva-Kakkanad,moving,10.0631,76.4100,23.6,forward,0,298,300,99.3,08:45:00,08:48:00,Aluva Depot,87.3,92.1,No,Clear,30.8,69.3
+2024-09-18 08:40:00,TRAIN_002,Lissie,MG Road,Aluva-Kakkanad,moving,10.0351,76.4465,24.8,forward,0,237,300,79.0,08:43:00,08:46:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,29.2,76.5
+2024-09-18 08:40:00,TRAIN_003,Vadakkekotta,SN Junction,Aluva-Kakkanad,moving,9.9847,76.5122,21.2,forward,0,294,300,98.0,08:42:00,08:45:00,Aluva Depot,84.2,94.7,No,Clear,31.5,64.3
+2024-09-18 08:40:00,TRAIN_004,Petta,Thaikoodam,Aluva-Kakkanad,moving,9.9903,76.5049,29.5,forward,0,204,300,68.0,08:44:00,08:47:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,26.6,83.1
+2024-09-18 08:40:00,TRAIN_005,Vadakkekotta,SN Junction,Aluva-Kakkanad,moving,9.9847,76.5122,25.1,reverse,0,313,300,104.3,08:46:00,08:49:00,Aluva Depot,85.6,93.8,No,Clear,32.7,66.0
+2024-09-18 08:45:00,TRAIN_001,Changampuzha Park,Palarivattom,Aluva-Kakkanad,moving,10.0575,76.4173,22.9,forward,0,305,300,101.7,08:50:00,08:53:00,Aluva Depot,87.3,92.1,No,Clear,31.1,68.6
+2024-09-18 08:45:00,TRAIN_002,MG Road,Maharaja's College,Aluva-Kakkanad,moving,10.0295,76.4538,23.7,forward,0,243,300,81.0,08:48:00,08:51:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,29.5,75.8
+2024-09-18 08:45:00,TRAIN_003,SN Junction,Kakkanad,Aluva-Kakkanad,moving,9.9791,76.5195,20.4,forward,0,297,300,99.0,08:47:00,08:50:00,Aluva Depot,84.2,94.7,No,Clear,31.8,63.6
+2024-09-18 08:45:00,TRAIN_004,Thaikoodam,Vytilla,Aluva-Kakkanad,moving,9.9959,76.4976,28.3,forward,0,210,300,70.0,08:49:00,08:52:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,26.9,82.4
+2024-09-18 08:45:00,TRAIN_005,SN Junction,Kakkanad,Aluva-Kakkanad,moving,9.9791,76.5195,24.6,reverse,0,316,300,105.3,08:51:00,08:54:00,Aluva Depot,85.6,93.8,No,Clear,33.0,65.3
+2024-09-18 08:50:00,TRAIN_001,Palarivattom,JLN Stadium,Aluva-Kakkanad,moving,10.0519,76.4246,21.8,forward,0,312,300,104.0,08:55:00,08:58:00,Aluva Depot,87.3,92.1,No,Clear,31.4,67.9
+2024-09-18 08:50:00,TRAIN_002,Maharaja's College,Ernakulam South,Aluva-Kakkanad,moving,10.0239,76.4611,22.5,forward,0,249,300,83.0,08:53:00,08:56:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,29.8,75.1
+2024-09-18 08:50:00,TRAIN_003,Kakkanad,SN Junction,Aluva-Kakkanad,moving,9.9735,76.5268,19.7,forward,0,300,300,100.0,08:52:00,08:55:00,Aluva Depot,84.2,94.7,No,Clear,32.1,62.9
+2024-09-18 08:50:00,TRAIN_004,Vytilla,Thaikoodam,Aluva-Kakkanad,moving,10.0015,76.4903,27.1,forward,0,216,300,72.0,08:54:00,08:57:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,27.2,81.7
+2024-09-18 08:50:00,TRAIN_005,Kakkanad,SN Junction,Aluva-Kakkanad,moving,9.9735,76.5268,23.9,reverse,0,319,300,106.3,08:56:00,08:59:00,Aluva Depot,85.6,93.8,No,Clear,33.3,64.6
+2024-09-18 08:55:00,TRAIN_001,JLN Stadium,Kaloor,Aluva-Kakkanad,moving,10.0463,76.4319,20.6,forward,0,319,300,106.3,09:00:00,09:03:00,Aluva Depot,87.3,92.1,No,Clear,31.7,67.2
+2024-09-18 08:55:00,TRAIN_002,Ernakulam South,Kadavanthra,Aluva-Kakkanad,moving,10.0183,76.4684,21.3,forward,0,255,300,85.0,08:58:00,09:01:00,Petta Depot,91.7,89.4,Due in 7 days,Clouds,30.1,74.4
+2024-09-18 08:55:00,TRAIN_003,SN Junction,Vadakkekotta,Aluva-Kakkanad,moving,9.9791,76.5195,18.9,forward,0,303,300,101.0,08:57:00,09:00:00,Aluva Depot,84.2,94.7,No,Clear,32.4,62.2
+2024-09-18 08:55:00,TRAIN_004,Thaikoodam,Petta,Aluva-Kakkanad,moving,9.9959,76.4976,26.0,forward,0,222,300,74.0,08:59:00,09:02:00,Petta Depot,88.9,91.3,Due in 3 days,Rain,27.5,81.0
+2024-09-18 08:55:00,TRAIN_005,SN Junction,Vadakkekotta,Aluva-Kakkanad,moving,9.9791,76.5195,23.2,reverse,0,322,300,107.3,09:01:00,09:04:00,Aluva Depot,85.6,93.8,No,Clear,33.6,63.9

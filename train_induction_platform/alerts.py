@@ -10,7 +10,7 @@ class AlertManager:
             'service_readiness': {'threshold': 12, 'priority': 'High'},
             'conflict_detection': {'priority': 'High'}
         }
-    def check_alerts(self, trainsets, optimization_results=None):
+    def check_alerts(self, trainsets, optimization_results=None, collision_alerts=None):
         """Check all alert conditions"""
         self.alerts = []
         self._check_fitness_alerts(trainsets)
@@ -18,6 +18,7 @@ class AlertManager:
         self._check_branding_alerts(trainsets)
         self._check_service_alerts(trainsets, optimization_results)
         self._check_conflict_alerts(optimization_results)
+        self._check_collision_alerts(collision_alerts)
         return self.alerts
     def _check_fitness_alerts(self, trainsets):
         """Check fitness certificate alerts"""
@@ -72,7 +73,26 @@ class AlertManager:
                 'message': f"Found {len(optimization_results['conflicts'])} optimization conflicts",
                 'trainset_id': None,
                 'timestamp': datetime.now()
-            }) 
+            })
+    
+    def _check_collision_alerts(self, collision_alerts):
+        """Check collision risk alerts from train tracking"""
+        if collision_alerts:
+            for collision in collision_alerts:
+                severity = collision.get('severity', 'MEDIUM')
+                priority = 'Critical' if severity == 'HIGH' else 'High'
+                
+                self.alerts.append({
+                    'type': 'collision_risk',
+                    'priority': priority,
+                    'message': f"🚨 COLLISION RISK: Trains {collision['trains'][0]} and {collision['trains'][1]} too close at {collision['location']} (Distance: {collision['distance']:.4f}°)",
+                    'trainset_id': f"{collision['trains'][0]}, {collision['trains'][1]}",
+                    'timestamp': collision['timestamp'],
+                    'severity': severity,
+                    'location': collision['location'],
+                    'distance': collision['distance']
+                })
+    
     def get_priority_alerts(self, priority_level='Critical'):
         """Get alerts filtered by priority"""
         return [alert for alert in self.alerts if alert['priority'] == priority_level]
