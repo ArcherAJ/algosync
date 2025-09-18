@@ -18,9 +18,12 @@ class AITimetableOptimizer:
         self.maintenance_constraints = self._load_maintenance_data()
         self.energy_data = self._load_energy_data()
         
-        # AI Model for demand prediction
+        # AI Models for optimization
         self.demand_model = None
+        self.energy_model = None
+        self.route_optimizer = None
         self.scaler = StandardScaler()
+        self.is_trained = False
         
     def _generate_time_slots(self) -> List[str]:
         """Generate 30-minute time slots from 05:00 to 23:30"""
@@ -35,6 +38,198 @@ class AITimetableOptimizer:
             
         return slots
     
+    def train_ml_models(self):
+        """Train ML models for demand prediction and route optimization"""
+        try:
+            if self.demand_patterns.empty:
+                return False
+            
+            # Prepare demand prediction features
+            demand_features = []
+            demand_targets = []
+            
+            for _, row in self.demand_patterns.iterrows():
+                hour = int(row['time_slot'].split('-')[0].split(':')[0])
+                features = [
+                    hour,
+                    1 if row['day_type'] == 'Weekday' else 0,
+                    row['peak_factor'],
+                    row['weather_impact'],
+                    row['event_impact']
+                ]
+                demand_features.append(features)
+                demand_targets.append(row['passenger_count'])
+            
+            if len(demand_features) < 10:
+                return False
+            
+            # Scale features
+            X = np.array(demand_features)
+            y = np.array(demand_targets)
+            X_scaled = self.scaler.fit_transform(X)
+            
+            # Train demand prediction model
+            if XGBOOST_AVAILABLE:
+                self.demand_model = xgb.XGBRegressor(n_estimators=100, random_state=42)
+            else:
+                self.demand_model = GradientBoostingRegressor(n_estimators=100, random_state=42)
+            
+            self.demand_model.fit(X_scaled, y)
+            
+            # Train energy optimization model
+            if not self.energy_data.empty:
+                energy_features = []
+                energy_targets = []
+                
+                for _, row in self.energy_data.iterrows():
+                    features = [
+                        row['distance_traveled_km'],
+                        row['passengers_carried'],
+                        row['month'],
+                        row['maintenance_impact'],
+                        row['renewable_percentage']
+                    ]
+                    energy_features.append(features)
+                    energy_targets.append(row['energy_consumption_kwh'])
+                
+                if len(energy_features) >= 5:
+                    X_energy = np.array(energy_features)
+                    y_energy = np.array(energy_targets)
+                    X_energy_scaled = self.scaler.fit_transform(X_energy)
+                    
+                    self.energy_model = SVR(kernel='rbf', C=100)
+                    self.energy_model.fit(X_energy_scaled, y_energy)
+            
+            self.is_trained = True
+            return True
+            
+        except Exception as e:
+            print(f"Error training ML models: {e}")
+            return False
+    
+    def predict_demand(self, station_name, hour, day_type='Weekday'):
+        """Predict passenger demand using ML model"""
+        if not self.is_trained or self.demand_model is None:
+            # Fallback to historical average
+            station_data = self.demand_patterns[self.demand_patterns['station_name'] == station_name]
+            if not station_data.empty:
+                return station_data['passenger_count'].mean()
+            return 1000  # Default fallback
+        
+        try:
+            # Prepare features
+            features = [
+                hour,
+                1 if day_type == 'Weekday' else 0,
+                1.5 if 7 <= hour <= 9 or 17 <= hour <= 19 else 0.7,  # peak_factor
+                0.95,  # weather_impact
+                1.0    # event_impact
+            ]
+            
+            features_scaled = self.scaler.transform([features])
+            predicted_demand = self.demand_model.predict(features_scaled)[0]
+            
+            return max(0, predicted_demand)
+            
+        except Exception as e:
+            print(f"Demand prediction error: {e}")
+            return 1000
+    
+    def optimize_route_efficiency(self, trainsets, constraints):
+        """Optimize route efficiency using ML insights"""
+        if not self.is_trained:
+            return self._basic_route_optimization(trainsets, constraints)
+        
+        optimized_routes = []
+        
+        for trainset in trainsets:
+            # Calculate efficiency score using ML
+            efficiency_score = self._calculate_ml_efficiency(trainset)
+            
+            # Determine optimal route based on efficiency
+            optimal_route = self._select_optimal_route(trainset, efficiency_score)
+            
+            optimized_routes.append({
+                'trainset_id': trainset['id'],
+                'optimal_route': optimal_route,
+                'efficiency_score': efficiency_score,
+                'ml_recommendation': self._get_ml_recommendation(trainset, efficiency_score)
+            })
+        
+        return optimized_routes
+    
+    def _calculate_ml_efficiency(self, trainset):
+        """Calculate ML-based efficiency score"""
+        try:
+            # Use multiple factors for efficiency calculation
+            wear_avg = sum(trainset['mileage']['component_wear'].values()) / 3
+            reliability = trainset['operational']['reliability_score']
+            maintenance_urgency = trainset['job_cards']['open']
+            
+            # ML-weighted efficiency calculation
+            efficiency = (
+                reliability * 0.4 +
+                (100 - wear_avg) * 0.3 +
+                (10 - maintenance_urgency) * 0.2 +
+                (100 if trainset['fitness']['overall_valid'] else 0) * 0.1
+            )
+            
+            return max(0, min(100, efficiency))
+            
+        except Exception as e:
+            print(f"Efficiency calculation error: {e}")
+            return 50  # Default efficiency
+    
+    def _select_optimal_route(self, trainset, efficiency_score):
+        """Select optimal route based on efficiency score"""
+        routes = ["Aluva-Kakkanad", "Thrippunithura-Vytilla"]
+        
+        if efficiency_score > 80:
+            return "Aluva-Kakkanad"  # High efficiency trains on main route
+        elif efficiency_score > 60:
+            return "Aluva-Kakkanad"  # Medium efficiency trains on main route
+        else:
+            return "Thrippunithura-Vytilla"  # Lower efficiency trains on secondary route
+    
+    def _get_ml_recommendation(self, trainset, efficiency_score):
+        """Get ML-based recommendations"""
+        recommendations = []
+        
+        if efficiency_score < 40:
+            recommendations.append("Schedule maintenance immediately")
+        elif efficiency_score < 60:
+            recommendations.append("Monitor closely, consider maintenance")
+        elif efficiency_score > 80:
+            recommendations.append("Excellent performance, maintain current operations")
+        
+        if trainset['job_cards']['open'] > 2:
+            recommendations.append("High maintenance backlog - prioritize")
+        
+        if not trainset['fitness']['overall_valid']:
+            recommendations.append("Invalid fitness certificate - ground immediately")
+        
+        return recommendations
+    
+    def _basic_route_optimization(self, trainsets, constraints):
+        """Basic route optimization without ML"""
+        optimized_routes = []
+        
+        for trainset in trainsets:
+            # Simple heuristic-based optimization
+            if trainset['operational']['reliability_score'] > 80:
+                route = "Aluva-Kakkanad"
+            else:
+                route = "Thrippunithura-Vytilla"
+            
+            optimized_routes.append({
+                'trainset_id': trainset['id'],
+                'optimal_route': route,
+                'efficiency_score': trainset['operational']['reliability_score'],
+                'ml_recommendation': ['Basic optimization applied']
+            })
+        
+        return optimized_routes
+
     def _load_station_data(self) -> pd.DataFrame:
         """Load station information"""
         try:

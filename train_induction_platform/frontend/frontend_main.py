@@ -9,6 +9,7 @@ from frontend.alerts_tab import create_alerts_tab
 from frontend.analytics import create_analytics_tab
 from frontend.maps import create_map
 from frontend.timetable_f import create_timetable_tab
+from frontend.ml_analytics import create_ml_analytics_tab
 
 
 
@@ -102,9 +103,9 @@ def create_streamlit_frontend():
             status_icon = "🟢" if status['connected'] else "🔴"
             st.write(f"{status_icon} {source.replace('_', ' ').title()}")
     # Main dashboard tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
         "📊 Dashboard", "🚆 Fleet Status", "🔧 Maintenance", 
-        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable"
+        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable", "🤖 ML Analytics"
     ])
     with tab1:
         create_dashboard_tab()
@@ -122,3 +123,5 @@ def create_streamlit_frontend():
         create_map()
     with tab8:
         create_timetable_tab()
+    with tab9:
+        create_ml_analytics_tab()

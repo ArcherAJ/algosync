@@ -6,6 +6,9 @@ from predictive_model import PredictiveMaintenanceModel
 from integrator import RealTimeDataIntegrator
 from alerts import AlertManager
 from reports import ReportGenerator
+from passenger_demand_predictor import PassengerDemandPredictor
+from energy_optimizer import EnergyConsumptionOptimizer
+from fleet_analytics import FleetPerformanceAnalytics
 
 from timetable_b import TimetableGenerator
 
@@ -17,6 +20,12 @@ class SystemIntegrationManager:
         self.data_integrator = RealTimeDataIntegrator()
         self.alert_manager = AlertManager()
         self.report_generator = ReportGenerator()
+        
+        # Initialize new ML modules
+        self.demand_predictor = PassengerDemandPredictor()
+        self.energy_optimizer = EnergyConsumptionOptimizer()
+        self.fleet_analytics = FleetPerformanceAnalytics()
+        
         self.last_optimization_time = None
         self.optimization_history = []
         
@@ -25,8 +34,15 @@ class SystemIntegrationManager:
     def initialize_system(self, n_trainsets=25):
         """Initialize the complete system with data"""
         trainsets = self.data_simulator.generate_realistic_dataset(n_trainsets)
-        # Train ML model with initial data
+        
+        # Train all ML models with initial data
         self.ml_model.train_model(trainsets)
+        self.demand_predictor.load_data()
+        self.demand_predictor.train_models()
+        self.energy_optimizer.load_data()
+        self.energy_optimizer.train_models()
+        self.fleet_analytics.train_models(trainsets)
+        
         return trainsets
     def run_complete_optimization(self, trainsets, constraints):
         """Run complete optimization pipeline"""
@@ -123,6 +139,36 @@ class SystemIntegrationManager:
     def generate_timetable(self, trainsets, constraints):
         timetable_gen = TimetableGenerator()
         return timetable_gen.generate_timetable(trainsets, constraints)
+    def get_ml_insights(self):
+        """Get comprehensive ML insights from all modules"""
+        insights = {
+            'maintenance_model': self.ml_model.get_model_performance(),
+            'demand_predictor': self.demand_predictor.get_model_performance(),
+            'energy_optimizer': self.energy_optimizer.get_model_performance(),
+            'fleet_analytics': self.fleet_analytics.get_model_performance()
+        }
+        return insights
+    
+    def get_demand_forecast(self, station_name, hours_ahead=24):
+        """Get passenger demand forecast"""
+        return self.demand_predictor.get_demand_forecast(station_name, hours_ahead)
+    
+    def get_energy_optimization(self, distance_km, passengers, month):
+        """Get energy optimization recommendations"""
+        return self.energy_optimizer.get_energy_optimization_recommendations(distance_km, passengers, month)
+    
+    def get_fleet_insights(self):
+        """Get fleet performance insights"""
+        return self.fleet_analytics.get_fleet_insights()
+    
+    def predict_maintenance_cost(self, trainset):
+        """Predict maintenance cost for a trainset"""
+        return self.ml_model.predict_maintenance_cost(trainset)
+    
+    def predict_failure_severity(self, trainset):
+        """Predict failure severity for a trainset"""
+        return self.ml_model.predict_failure_severity(trainset)
+
     def reset_system(self):
         """Reset the system to initial state"""
         self.ml_model = PredictiveMaintenanceModel()
