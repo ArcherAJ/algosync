@@ -8,7 +8,6 @@ from frontend.branding import create_branding_tab
 from frontend.alerts_tab import create_alerts_tab
 from frontend.analytics import create_analytics_tab
 from frontend.maps import create_map
-from frontend.advert_f import create_adverb
 from frontend.timetable_f import create_timetable_tab
 
 
@@ -103,9 +102,9 @@ def create_streamlit_frontend():
             status_icon = "🟢" if status['connected'] else "🔴"
             st.write(f"{status_icon} {source.replace('_', ' ').title()}")
     # Main dashboard tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7,tab8, tab9= st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
         "📊 Dashboard", "🚆 Fleet Status", "🔧 Maintenance", 
-        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "📢 Advertisement","🕒 Timetable"
+        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable"
     ])
     with tab1:
         create_dashboard_tab()
@@ -122,6 +121,4 @@ def create_streamlit_frontend():
     with tab7:
         create_map()
     with tab8:
-        create_adverb()
-    with tab9:
         create_timetable_tab()
