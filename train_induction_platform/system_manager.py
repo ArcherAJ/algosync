@@ -1,4 +1,5 @@
 from common_imports import *
+from data_config import config
 
 from simulator import KMRLDataSimulator
 from optimizer import MultiObjectiveOptimizer
@@ -39,7 +40,7 @@ class SystemIntegrationManager:
         
         # Initialize ML integration
         self.optimizer.set_ml_model(self.ml_model)
-    def initialize_system(self, n_trainsets=25):
+    def initialize_system(self, n_trainsets=config.DEFAULT_TRAINSET_COUNT):
         """Initialize the complete system with data"""
         trainsets = self.data_simulator.generate_realistic_dataset(n_trainsets)
         

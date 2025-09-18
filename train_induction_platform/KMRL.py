@@ -131,10 +131,11 @@ if 'system_manager' not in st.session_state:
 if 'trainsets' not in st.session_state:
     # Generate mock trainset data
     trainsets = []
-    advertisers = ['Coca-Cola', 'Pepsi', 'Amazon', 'Google', 'Microsoft', 'Apple', None, None, None]
-    depots = ['Depot A', 'Depot B', 'Depot C']
+    from data_config import config
+    advertisers = config.ADVERTISERS
+    depots = config.DEPOTS
     
-    for i in range(1, 31):
+    for i in range(1, 41):
         depot = random.choice(depots)
         reliability = random.randint(85, 98)
         advertiser = random.choice(advertisers)

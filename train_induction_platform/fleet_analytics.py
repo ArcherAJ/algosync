@@ -29,6 +29,10 @@ class FleetPerformanceAnalytics:
                 1 if trainset['fitness']['telecom'] else 0
             ]) / 3
             
+            # Get punctuality metrics
+            punctuality_score = trainset['operational'].get('punctuality_score', 99.5)
+            on_time_performance = trainset['operational'].get('on_time_performance', 99.5)
+            
             # Create feature vector
             feature_vector = [
                 trainset['mileage']['total_km'],
@@ -38,6 +42,8 @@ class FleetPerformanceAnalytics:
                 efficiency_score,
                 fitness_score,
                 trainset['operational']['reliability_score'],
+                punctuality_score,
+                on_time_performance,
                 trainset['ai_score'] if 'ai_score' in trainset else 50
             ]
             
@@ -45,7 +51,9 @@ class FleetPerformanceAnalytics:
                 'trainset_id': trainset['id'],
                 'features': feature_vector,
                 'depot': trainset.get('depot', 'Unknown'),
-                'status': trainset['operational']['status']
+                'status': trainset['operational']['status'],
+                'punctuality_score': punctuality_score,
+                'on_time_performance': on_time_performance
             })
         
         return fleet_data
@@ -210,6 +218,12 @@ class FleetPerformanceAnalytics:
         high_performers = len([item for item in self.fleet_data if item['performance_score'] > 80])
         low_performers = len([item for item in self.fleet_data if item['performance_score'] < 40])
         
+        # Calculate punctuality metrics
+        avg_punctuality = np.mean([item['punctuality_score'] for item in self.fleet_data])
+        avg_on_time = np.mean([item['on_time_performance'] for item in self.fleet_data])
+        punctuality_excellent = len([item for item in self.fleet_data if item['punctuality_score'] >= 99.7])
+        punctuality_good = len([item for item in self.fleet_data if 99.5 <= item['punctuality_score'] < 99.7])
+        
         # Depot analysis
         depot_analysis = {}
         for item in self.fleet_data:
@@ -248,7 +262,11 @@ class FleetPerformanceAnalytics:
                 'avg_performance': round(avg_performance, 2),
                 'high_performers': high_performers,
                 'low_performers': low_performers,
-                'anomaly_count': len(anomalies)
+                'anomaly_count': len(anomalies),
+                'avg_punctuality': round(avg_punctuality, 2),
+                'avg_on_time': round(avg_on_time, 2),
+                'punctuality_excellent': punctuality_excellent,
+                'punctuality_good': punctuality_good
             },
             'clusters': clusters,
             'anomalies': anomalies[:10],  # Top 10 anomalies

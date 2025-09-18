@@ -3,44 +3,125 @@ from common_imports import *
 def create_dashboard_tab():
     """Create the main dashboard tab with hover cards."""
     
-    # Add custom CSS for hover effect and card size
+    # Enhanced Dashboard CSS
     st.markdown("""
     <style>
-    .metric-card {
-        background-color: #f8f9fa;
-        padding: 10px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        color: white;
         text-align: center;
-        width: 130px;
-        height: 150px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
+    
+    .metric-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    }
+    
     .metric-card:hover {
-        transform: scale(1.03);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     }
+    
     .metric-title {
-        font-size: 16px;
+        font-size: 1rem;
         font-weight: 600;
-        color: #333;
-        margin-bottom: 10px;
+        color: #495057;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
+    
     .metric-value {
-        font-size: 28px;
-        font-weight: bold;
-        color: #007bff;
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
     }
+    
     .metric-delta {
-        font-size: 14px;
+        font-size: 0.9rem;
         color: #28a745;
+        font-weight: 500;
+        background: rgba(40, 167, 69, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    
+    .metric-delta.negative {
+        color: #dc3545;
+        background: rgba(220, 53, 69, 0.1);
+    }
+    
+    .section-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        margin: 1.5rem 0 1rem 0;
+        border-left: 4px solid #667eea;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .weather-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        border: 1px solid #e9ecef;
+        margin: 1rem 0;
+    }
+    
+    .activity-item {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 0.5rem 0;
+        border-left: 4px solid #667eea;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .activity-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
     </style>
     """, unsafe_allow_html=True)
 
     
-    # Header of the Dashboard
-    st.header("📊 Real-time Fleet Dashboard")
+    # Enhanced Dashboard Header
+    st.markdown("""
+    <div class="dashboard-header">
+        <h1 style="margin: 0; font-size: 2rem; font-weight: 700;">📊 Real-time Fleet Dashboard</h1>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1.1rem;">Live monitoring and analytics for your metro fleet</p>
+    </div>
+    """, unsafe_allow_html=True)
     
     col1, col2, col3, col4, col5 = st.columns(5)
     trainsets = st.session_state.trainsets
@@ -50,7 +131,7 @@ def create_dashboard_tab():
         delta_service = f"{service_count/len(trainsets)*100:.1f}%"
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-title">Service Ready</div>
+            <div class="metric-title">🚆 Service Ready</div>
             <div class="metric-value">{service_count}</div>
             <div class="metric-delta">↑ {delta_service}</div>
         </div>
@@ -60,9 +141,9 @@ def create_dashboard_tab():
         standby_count = sum(1 for t in trainsets if t['recommendation'] == 'Standby')
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-title">Standby</div>
+            <div class="metric-title">⏸️ Standby</div>
             <div class="metric-value">{standby_count}</div>
-            <div class="metric-delta">&nbsp;</div>
+            <div class="metric-delta">Ready</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -70,9 +151,9 @@ def create_dashboard_tab():
         ibl_count = sum(1 for t in trainsets if t['recommendation'] == 'IBL')
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-title">IBL/Maintenance</div>
+            <div class="metric-title">🔧 IBL/Maintenance</div>
             <div class="metric-value">{ibl_count}</div>
-            <div class="metric-delta">&nbsp;</div>
+            <div class="metric-delta">In Service</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -81,7 +162,7 @@ def create_dashboard_tab():
         delta_fitness = f"{fitness_valid/len(trainsets)*100:.1f}%"
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-title">Fitness Valid</div>
+            <div class="metric-title">✅ Fitness Valid</div>
             <div class="metric-value">{fitness_valid}</div>
             <div class="metric-delta">↑ {delta_fitness}</div>
         </div>

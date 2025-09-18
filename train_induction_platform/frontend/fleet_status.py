@@ -18,7 +18,7 @@ def create_fleet_status_tab():
     if fleet_insights:
         # Overall metrics
         overall = fleet_insights['overall_metrics']
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
         
         with col1:
             st.metric("Total Trainsets", overall['total_trainsets'])
@@ -28,6 +28,10 @@ def create_fleet_status_tab():
             st.metric("High Performers", overall['high_performers'])
         with col4:
             st.metric("Anomalies Detected", overall['anomaly_count'])
+        with col5:
+            st.metric("⏰ Avg Punctuality", f"{overall['avg_punctuality']:.2f}%")
+        with col6:
+            st.metric("🚀 On-Time Performance", f"{overall['avg_on_time']:.2f}%")
     
     # Filters
     col1, col2, col3 = st.columns(3)
@@ -36,7 +40,7 @@ def create_fleet_status_tab():
     with col2:
         status_filter = st.selectbox("Filter by Status", ["All", "Service", "Standby", "IBL"])
     with col3:
-        sort_by = st.selectbox("Sort by", ["AI Score", "ID", "Fitness Expiry", "Performance"])
+        sort_by = st.selectbox("Sort by", ["AI Score", "ID", "Fitness Expiry", "Performance", "Punctuality"])
     
     # Apply filters
     filtered_trainsets = trainsets.copy()
@@ -53,6 +57,9 @@ def create_fleet_status_tab():
     elif sort_by == "Performance":
         # Sort by performance score if available
         filtered_trainsets.sort(key=lambda x: x.get('performance_score', 0), reverse=True)
+    elif sort_by == "Punctuality":
+        # Sort by punctuality score
+        filtered_trainsets.sort(key=lambda x: x['operational'].get('punctuality_score', 99.5), reverse=True)
     
     # Performance clusters section
     if fleet_insights and fleet_insights.get('clusters'):
@@ -120,6 +127,52 @@ def create_fleet_status_tab():
                     title="Average Performance by Depot")
         st.plotly_chart(fig, use_container_width=True)
     
+    # Punctuality Analysis Section
+    if fleet_insights:
+        st.subheader("⏰ Punctuality Analysis")
+        overall = fleet_insights['overall_metrics']
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Excellent (≥99.7%)", overall['punctuality_excellent'])
+        with col2:
+            st.metric("Good (99.5-99.7%)", overall['punctuality_good'])
+        with col3:
+            st.metric("Average Punctuality", f"{overall['avg_punctuality']:.2f}%")
+        with col4:
+            st.metric("On-Time Performance", f"{overall['avg_on_time']:.2f}%")
+        
+        # Punctuality distribution chart
+        punctuality_data = []
+        for trainset in filtered_trainsets:
+            punctuality_data.append({
+                'trainset_id': trainset['id'],
+                'punctuality': trainset['operational'].get('punctuality_score', 99.5),
+                'depot': trainset['depot'],
+                'status': trainset['recommendation']
+            })
+        
+        if punctuality_data:
+            punct_df = pd.DataFrame(punctuality_data)
+            
+            # Create punctuality distribution chart
+            fig = px.histogram(punct_df, x='punctuality', 
+                             title="Punctuality Score Distribution",
+                             labels={'punctuality': 'Punctuality Score (%)', 'count': 'Number of Trainsets'},
+                             nbins=20)
+            fig.add_vline(x=99.5, line_dash="dash", line_color="green", 
+                         annotation_text="Target: 99.5%")
+            fig.add_vline(x=99.7, line_dash="dash", line_color="blue", 
+                         annotation_text="Excellent: 99.7%")
+            st.plotly_chart(fig, use_container_width=True)
+            
+            # Top punctuality performers
+            st.write("**🏆 Top Punctuality Performers:**")
+            top_punctuality = punct_df.nlargest(10, 'punctuality')
+            st.dataframe(top_punctuality[['trainset_id', 'punctuality', 'depot', 'status']], 
+                        use_container_width=True)
+    
     # AI Recommendations
     if fleet_insights and fleet_insights.get('recommendations'):
         st.subheader("🤖 AI Recommendations")
@@ -163,6 +216,7 @@ def create_trainset_card(train):
             wear_avg = sum(train['mileage']['component_wear'].values()) / 3
             st.write(f"**Avg Wear:** {wear_avg:.1f}%")
             st.write(f"**Days to Fitness Expiry:** {train['fitness']['days_until_expiry']}")
+            st.write(f"**⏰ Punctuality:** {train['operational'].get('punctuality_score', 99.5):.2f}%")
         # Manual override
         st.subheader("Manual Override")
         override_status = st.selectbox(

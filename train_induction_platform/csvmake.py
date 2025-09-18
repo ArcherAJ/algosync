@@ -1,4 +1,5 @@
 from common_imports import *
+from data_config import config
 
 # Set random seed for reproducibility
 np.random.seed(42)
@@ -6,7 +7,7 @@ random.seed(42)
 
 def create_trainsets_csv():
     """Create comprehensive trainsets data for AI/ML"""
-    n_trainsets = 100  # Large dataset for ML
+    n_trainsets = config.MAX_TRAINSET_COUNT  # Large dataset for ML
     
     data = {
         'trainset_id': [],
@@ -34,18 +35,19 @@ def create_trainsets_csv():
         'operational_status': [],
         'operational_reliability_score': [],
         'operational_days_since_service': [],
+        'operational_punctuality_score': [],
+        'operational_on_time_performance': [],
         'ai_score': [],
         'recommendation': [],
         'timestamp': []
     }
     
-    depots = ['Aluva Depot', 'Petta Depot', 'Muttom Yard', 'Kakkanad Depot']
-    advertisers = ['Coca-Cola', 'Pepsi', 'Amazon', 'Google', 'Microsoft', 'Apple', 
-                  'Samsung', 'Toyota', 'Flipkart', 'BSNL', 'Airtel', 'Jio', None]
-    priorities = ['Low', 'Medium', 'High', 'Critical']
-    maintenance_types = ['Routine', 'Preventive', 'Corrective', 'Emergency']
-    statuses = ['Available', 'Standby', 'Maintenance', 'IBL']
-    cleaning_statuses = ['Clean', 'Requires Cleaning']
+    depots = config.DEPOTS
+    advertisers = config.ADVERTISERS
+    priorities = config.PRIORITIES
+    maintenance_types = config.MAINTENANCE_TYPES
+    statuses = config.OPERATIONAL_STATUSES
+    cleaning_statuses = config.CLEANING_STATUSES
     
     current_time = datetime.now()
     
@@ -103,6 +105,8 @@ def create_trainsets_csv():
                                                        weights=[0.6, 0.2, 0.15, 0.05])[0])
         data['operational_reliability_score'].append(reliability)
         data['operational_days_since_service'].append(days_since_service)
+        data['operational_punctuality_score'].append(config.get_punctuality_score())
+        data['operational_on_time_performance'].append(config.get_punctuality_score())
         
         # AI Score calculation (simplified)
         ai_score = reliability - (open_jobs * 5) - (wear_factor * 15)

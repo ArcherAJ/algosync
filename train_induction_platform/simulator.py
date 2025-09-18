@@ -1,12 +1,13 @@
 from common_imports import *
 from utils import calculate_ai_score
+from data_config import config
 
 class KMRLDataSimulator:
-    def __init__(self, n_trainsets=25):
+    def __init__(self, n_trainsets=config.DEFAULT_TRAINSET_COUNT):
         self.n_trainsets = n_trainsets
-        self.brands = ['Coca Cola', 'Pepsi', 'Samsung', 'Apple', 'Toyota', 'Flipkart', 'BSNL', 'Airtel', None]
-        self.depots = ['Aluva Depot', 'Petta Depot']
-        self.maintenance_types = ['Routine', 'Preventive', 'Corrective', 'Emergency']
+        self.brands = config.ADVERTISERS
+        self.depots = config.DEPOTS
+        self.maintenance_types = config.MAINTENANCE_TYPES
     def simulate_real_time_updates(self, trainsets):
         """Simulate real-time data updates from various sources"""
         updated_count = 0
@@ -45,7 +46,7 @@ class KMRLDataSimulator:
         cleaning_prob = min(0.8, 0.2 + wear_factor * 0.6)
         trainset = {
             'id': trainset_id,
-            'depot': random.choice(self.depots),
+            'depot': config.get_random_depot(),
             'fitness': {
                 'rolling_stock': random.random() > (0.05 + wear_factor * 0.1),
                 'signalling': random.random() > (0.03 + wear_factor * 0.08),
@@ -57,16 +58,16 @@ class KMRLDataSimulator:
             'job_cards': {
                 'open': random.randint(0, min(4, int(wear_factor * 6))),
                 'closed_today': random.randint(0, 2),
-                'priority': random.choice(['Low', 'Medium', 'High', 'Critical']),
-                'maintenance_type': random.choice(self.maintenance_types),
+                'priority': config.get_random_priority(),
+                'maintenance_type': config.get_random_maintenance_type(),
                 'estimated_hours': random.randint(1, 8)
             },
             'branding': {
-                'advertiser': random.choice(self.brands),
+                'advertiser': config.get_random_advertiser(),
                 'contract_start': now - timedelta(days=random.randint(0, 60)),
                 'hours_required_today': random.randint(4, 15) if random.random() > 0.6 else 0,
-                'contract_value': random.randint(20000, 120000) if random.random() > 0.6 else 0,
-                'exposure_deficit': random.randint(1, 20) if random.random() > 0.7 else 0
+                'contract_value': config.get_contract_value() if random.random() > 0.6 else 0,
+                'exposure_deficit': config.get_exposure_deficit() if random.random() > 0.7 else 0
             },
             'mileage': {
                 'total_km': total_km,
@@ -74,22 +75,22 @@ class KMRLDataSimulator:
                 'daily_target': random.randint(150, 450),
                 'balance_deviation': int((random.random() - 0.5) * 5000),
                 'component_wear': {
-                    'brake_pads': min(100, int(30 + wear_factor * 70)),
-                    'bogies': min(100, int(25 + wear_factor * 75)),
-                    'hvac': min(100, int(20 + wear_factor * 80))
+                    'brake_pads': config.get_component_wear('brake_pads'),
+                    'bogies': config.get_component_wear('bogies'),
+                    'hvac': config.get_component_wear('hvac')
                 }
             },
             'cleaning': {
-                'interior_status': 'Clean' if random.random() > (0.2 + wear_factor * 0.2) else 'Requires Cleaning',
-                'exterior_status': 'Clean' if random.random() > (0.3 + wear_factor * 0.2) else 'Requires Cleaning',
+                'interior_status': config.get_random_cleaning_status() if random.random() > (0.2 + wear_factor * 0.2) else 'Requires Cleaning',
+                'exterior_status': config.get_random_cleaning_status() if random.random() > (0.3 + wear_factor * 0.2) else 'Requires Cleaning',
                 'last_cleaned': now - timedelta(days=random.randint(0, 7)),
                 'deep_clean_due': random.random() > (0.8 - wear_factor * 0.3),
-                'cleaning_slot_assigned': f"Bay {random.randint(1,5)}" if random.random() > 0.5 else None,
+                'cleaning_slot_assigned': f"Bay {config.get_cleaning_bay()}" if random.random() > 0.5 else None,
                 'estimated_duration': random.randint(2, 5)
             },
             'stabling': {
-                'current_bay': f"Bay-{random.randint(1,15)}",
-                'optimal_bay': f"Bay-{random.randint(1,15)}",
+                'current_bay': config.generate_bay_name(config.get_bay_number()),
+                'optimal_bay': config.generate_bay_name(config.get_bay_number()),
                 'shunting_moves_required': random.randint(0,3),
                 'turn_out_time_minutes': random.randint(10,40),
                 'energy_cost_shunting': random.randint(100,600)
@@ -98,7 +99,9 @@ class KMRLDataSimulator:
                 'status': 'Available' if random.random() > (0.15 + wear_factor * 0.2) else ('IBL' if random.random() > 0.7 else 'Maintenance'),
                 'last_service': now - timedelta(days=days_since_maintenance),
                 'next_scheduled_maintenance': now + timedelta(days=maintenance_cycle - days_since_maintenance),
-                'reliability_score': max(70, 100 - int(wear_factor * 30)),
+                'reliability_score': config.get_reliability_score(),
+                'punctuality_score': config.get_punctuality_score(),  # High punctuality 99.5%+
+                'on_time_performance': config.get_punctuality_score(),  # On-time performance
                 'punctuality_impact': random.random() * 5
             },
             'manual_override': None,
