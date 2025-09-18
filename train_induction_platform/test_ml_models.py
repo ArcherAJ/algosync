@@ -4,10 +4,7 @@ Test script for ML models in branding.py
 This script demonstrates how to use the ML models independently
 """
 
-import pandas as pd
-import numpy as np
-import os
-import sys
+from common_imports import *
 
 # Add the frontend directory to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), 'frontend'))

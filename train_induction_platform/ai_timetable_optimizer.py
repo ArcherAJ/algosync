@@ -1,12 +1,5 @@
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-import random
+from common_imports import *
 from typing import List, Dict, Any, Tuple
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
-import warnings
-warnings.filterwarnings('ignore')
 
 class AITimetableOptimizer:
     """

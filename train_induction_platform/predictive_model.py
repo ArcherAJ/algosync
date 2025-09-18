@@ -1,28 +1,12 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import random
-from datetime import datetime, timedelta
-import io
-import time
-import math
-import threading
-import queue
-import json
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import requests
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
-import joblib
-import warnings
+from common_imports import *
 
 class PredictiveMaintenanceModel:
     def __init__(self):
         self.model = None
         self.scaler = StandardScaler()
         self.is_trained = False
+        self.feature_importance = None
+        
     def prepare_training_data(self, historical_data):
         """Prepare training data from historical records"""
         features = []
@@ -50,6 +34,7 @@ class PredictiveMaintenanceModel:
             features.append(feature_vector)
             labels.append(label)
         return np.array(features), np.array(labels)
+        
     def train_model(self, historical_data):
         """Train the predictive maintenance model"""
         try:
@@ -64,11 +49,15 @@ class PredictiveMaintenanceModel:
             self.model = RandomForestRegressor(n_estimators=100, random_state=42)
             self.model.fit(features_scaled, labels)
             self.is_trained = True
+            
+            # Store feature importance
+            self.feature_importance = self.model.feature_importances_
             return True
         except Exception as e:
             print(f"Error training model: {e}")
             self.is_trained = False
             return False
+            
     def predict_maintenance(self, trainsets):
         """Predict maintenance needs for all trainsets"""
         if not self.is_trained or self.model is None:
@@ -118,9 +107,21 @@ class PredictiveMaintenanceModel:
                 # Fallback if prediction fails
                 predictions.append(self._fallback_prediction(trainset))
         return pd.DataFrame(predictions)
+        
+    def get_model_performance(self):
+        """Get model performance metrics"""
+        if not self.is_trained:
+            return None
+        return {
+            'is_trained': self.is_trained,
+            'feature_importance': self.feature_importance.tolist() if self.feature_importance is not None else None,
+            'model_type': 'RandomForestRegressor'
+        }
+        
     def _fallback_predictions(self, trainsets):
         """Fallback predictions when model is not trained"""
         return pd.DataFrame([self._fallback_prediction(t) for t in trainsets])
+        
     def _fallback_prediction(self, trainset):
         """Simple heuristic-based fallback prediction"""
         wear_avg = sum(trainset['mileage']['component_wear'].values()) / 3
@@ -144,4 +145,3 @@ class PredictiveMaintenanceModel:
             'priority': priority,
             'confidence': 'Low (Heuristic)'
         }
-# Real-time Data Integration

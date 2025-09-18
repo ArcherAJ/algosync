@@ -1,10 +1,4 @@
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.express as px
-import plotly.graph_objects as go
-from datetime import datetime, timedelta
+from common_imports import *
 from advert_b import MetroAdvertisementPlanner, initialize_sample_data
 
 

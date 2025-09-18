@@ -1,12 +1,4 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-from datetime import datetime, timedelta
-import random
-import json
-import time
+from common_imports import *
 
 # Initialize session state variables
 if 'system_manager' not in st.session_state:

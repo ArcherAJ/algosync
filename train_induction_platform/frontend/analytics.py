@@ -1,9 +1,4 @@
-import streamlit as st              # UI
-import pandas as pd                 # DataFrame handling
-import plotly.graph_objects as go   # Time series plots
-from plotly.subplots import make_subplots  # Multiple plots
-from datetime import datetime       # Timestamps for exports
-import json                         # Export report JSON
+from common_imports import *
 
 def create_analytics_tab():
     """Create the analytics and trends tab"""

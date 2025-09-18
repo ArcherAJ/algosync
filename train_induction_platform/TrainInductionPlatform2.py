@@ -3,21 +3,7 @@ Enhanced KMRL AI Induction Planning Platform
 Comprehensive AI-powered decision support with multi-objective optimization 
 """
 
-import streamlit as st
-import pandas as pd
-import numpy as np
-import random
-from datetime import datetime, timedelta
-import io
-import time
-import math
-import threading
-import queue
-import json
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import requests
+from common_imports import *
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 import joblib

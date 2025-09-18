@@ -1,7 +1,4 @@
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-import random
+from common_imports import *
 
 # Set random seed for reproducibility
 np.random.seed(42)

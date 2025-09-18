@@ -1,22 +1,4 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import random
-from datetime import datetime, timedelta
-import io
-import time
-import math
-import threading
-import queue
-import json
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import requests
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
-import joblib
-import warnings
+from common_imports import *
 
 from simulator import KMRLDataSimulator
 from optimizer import MultiObjectiveOptimizer
@@ -37,6 +19,9 @@ class SystemIntegrationManager:
         self.report_generator = ReportGenerator()
         self.last_optimization_time = None
         self.optimization_history = []
+        
+        # Initialize ML integration
+        self.optimizer.set_ml_model(self.ml_model)
     def initialize_system(self, n_trainsets=25):
         """Initialize the complete system with data"""
         trainsets = self.data_simulator.generate_realistic_dataset(n_trainsets)

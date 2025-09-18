@@ -1,3 +1,4 @@
+from common_imports import *
 from map_b import KochiMetroMap
 
 def create_map():

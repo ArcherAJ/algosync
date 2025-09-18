@@ -1,8 +1,5 @@
-import pandas as pd
-import numpy as np
+from common_imports import *
 from typing import Dict, List, Tuple, Optional
-import json
-from datetime import datetime, timedelta
 
 class MetroAdvertisementPlanner:
     def __init__(self):

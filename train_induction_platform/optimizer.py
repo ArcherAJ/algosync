@@ -1,22 +1,4 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import random
-from datetime import datetime, timedelta
-import io
-import time
-import math
-import threading
-import queue
-import json
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import requests
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
-import joblib
-import warnings
+from common_imports import *
 
 class MultiObjectiveOptimizer:
     def __init__(self):
@@ -27,7 +9,13 @@ class MultiObjectiveOptimizer:
             'maintenance_risk': 0.20,
             'energy_efficiency': 0.10,
             'operational_flexibility': 0.10
-        } 
+        }
+        self.ml_model = None  # Will be set by system manager
+        
+    def set_ml_model(self, ml_model):
+        """Set the ML model for enhanced optimization"""
+        self.ml_model = ml_model
+        
     def calculate_objective_scores(self, trainset):
         """Calculate individual objective scores for a trainset"""
         scores = {}
@@ -64,14 +52,29 @@ class MultiObjectiveOptimizer:
         scores['operational_flexibility'] = flexibility
         
         return scores
+        
     def calculate_overall_score(self, trainset):
         """Calculate weighted overall score for optimization"""
         objective_scores = self.calculate_objective_scores(trainset)
+        
+        # Enhanced scoring with ML predictions if available
+        if self.ml_model and self.ml_model.is_trained:
+            try:
+                # Get ML-based maintenance prediction
+                ml_prediction = self.ml_model.predict_maintenance([trainset])
+                if not ml_prediction.empty:
+                    risk_score = ml_prediction.iloc[0]['risk_score']
+                    # Adjust maintenance risk score based on ML prediction
+                    objective_scores['maintenance_risk'] = 1.0 - (risk_score / 100)
+            except Exception as e:
+                print(f"ML prediction failed: {e}")
+        
         weighted_score = sum(
             objective_scores[obj] * self.weights[obj] 
             for obj in self.weights
         )
         return weighted_score, objective_scores
+        
     def optimize_fleet_assignment(self, trainsets, constraints):
         """ Optimize fleet assignment using a weighted multi-objective approach """
         optimized_trainsets = trainsets.copy()
@@ -117,4 +120,3 @@ class MultiObjectiveOptimizer:
         standby = sum(1 for t in optimized_trainsets if t['recommendation'] == 'Standby')
         ibl = sum(1 for t in optimized_trainsets if t['recommendation'] == 'IBL')
         return optimized_trainsets, conflicts, service_ready, standby, ibl
-# Predictive Maintenance with ML

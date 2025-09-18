@@ -1,7 +1,6 @@
-import streamlit as st
+from common_imports import *
 import folium
 from streamlit_folium import st_folium
-import plotly.graph_objects as go
 
 
 class KochiMetroMap:
