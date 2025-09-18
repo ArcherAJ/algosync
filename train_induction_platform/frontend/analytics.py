@@ -107,6 +107,7 @@ def create_analytics_tab():
         -webkit-text-fill-color: transparent;
         background-clip: text;
     }
+    
     </style>
     """, unsafe_allow_html=True)
     

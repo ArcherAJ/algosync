@@ -281,6 +281,7 @@ def create_branding_tab():
             inset 0 1px 0 rgba(255,255,255,0.2);
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
+    
     </style>
     """, unsafe_allow_html=True)
 

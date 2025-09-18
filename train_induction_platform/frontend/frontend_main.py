@@ -110,6 +110,7 @@ def create_streamlit_frontend():
         -webkit-text-fill-color: transparent;
         background-clip: text;
         animation: textGlow 2s ease-in-out infinite alternate;
+        color: black;
     }
     
     @keyframes textGlow {
@@ -535,26 +536,6 @@ def create_streamlit_frontend():
         }
     }
     
-    /* Dark Mode Styles */
-    .dark-mode {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        color: #e0e0e0;
-    }
-    
-    .dark-mode .main-header {
-        background: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #718096 100%);
-    }
-    
-    .dark-mode .metric-card {
-        background: rgba(45, 55, 72, 0.95);
-        border-color: rgba(255, 255, 255, 0.1);
-        color: #e0e0e0;
-    }
-    
-    .dark-mode .stTabs [data-baseweb="tab"] {
-        background: rgba(45, 55, 72, 0.8);
-        color: #e0e0e0;
-    }
     
     /* Loading States and Skeleton Screens */
     .skeleton {
@@ -719,17 +700,15 @@ def create_streamlit_frontend():
     .status-warning { background: #fbbf24; }
     .status-offline { background: #ef4444; }
     
-    /* Custom Scrollbar for Dark Mode */
-    .dark-mode ::-webkit-scrollbar-track {
-        background: #2d3748;
+    /* Smooth Transitions */
+    * {
+        transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
     
-    .dark-mode ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #4a5568 0%, #718096 100%);
-    }
-    
-    .dark-mode ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    .main, .main-header, .metric-card, .stTabs [data-baseweb="tab"], 
+    .stButton > button, .stPlotlyChart, .stDataFrame, .stSuccess, 
+    .stError, .stWarning, .stInfo, .skeleton-card, .toast {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -771,15 +750,6 @@ def create_streamlit_frontend():
             <p style="margin: 0.5rem 0 0 0; text-align: center; opacity: 0.9; font-size: 0.9rem;">AI-Powered Fleet Management</p>
         </div>
         """, unsafe_allow_html=True)
-        
-        # Dark Mode Toggle
-        if 'dark_mode' not in st.session_state:
-            st.session_state.dark_mode = False
-        
-        dark_mode = st.checkbox("🌙 Dark Mode", value=st.session_state.dark_mode)
-        if dark_mode != st.session_state.dark_mode:
-            st.session_state.dark_mode = dark_mode
-            st.rerun()
         
         # Auto-refresh toggle
         st.session_state.auto_refresh = st.checkbox("🔄 Auto-refresh (30s)", value=st.session_state.auto_refresh)

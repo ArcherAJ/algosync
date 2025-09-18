@@ -29,7 +29,6 @@ def create_dashboard_tab():
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
         animation: shimmer 3s ease-in-out infinite;
     }
     
@@ -105,11 +104,6 @@ def create_dashboard_tab():
         border: 1px solid rgba(40, 167, 69, 0.2);
     }
     
-    .metric-delta.negative {
-        color: #dc3545;
-        background: rgba(220, 53, 69, 0.1);
-        border-color: rgba(220, 53, 69, 0.2);
-    }
     
     .section-header {
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
