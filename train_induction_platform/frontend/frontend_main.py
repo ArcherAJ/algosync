@@ -17,19 +17,20 @@ from frontend.train_tracking import create_train_tracking_tab
 
 def create_streamlit_frontend():
     """ Create a comprehensive Streamlit frontend for the KMRL AI Induction Planning Platform"""
-    # Initialize session state
-    if 'system_manager' not in st.session_state:
-        st.session_state.system_manager = SystemIntegrationManager()
-        st.session_state.trainsets = st.session_state.system_manager.initialize_system(config.DEFAULT_TRAINSET_COUNT)
-        st.session_state.last_refresh = datetime.now()
-        st.session_state.auto_refresh = False
-    # Page configuration
+    # Page configuration - MUST be first Streamlit command
     st.set_page_config(
         page_title="KMRL AI Induction Planning Platform",
         page_icon="🚇",
         layout="wide",
         initial_sidebar_state="expanded"
     )
+    
+    # Initialize session state
+    if 'system_manager' not in st.session_state:
+        st.session_state.system_manager = SystemIntegrationManager()
+        st.session_state.trainsets = st.session_state.system_manager.initialize_system(config.DEFAULT_TRAINSET_COUNT)
+        st.session_state.last_refresh = datetime.now()
+        st.session_state.auto_refresh = False
     
     # Ultra-Modern Vibrant CSS Design
     st.markdown("""

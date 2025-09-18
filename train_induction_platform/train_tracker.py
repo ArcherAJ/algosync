@@ -99,9 +99,18 @@ class TrainTracker:
             "Thrippunithura-Vytilla": thrippunithura_vytilla
         }
     
-    def initialize_trains_from_timetable(self, timetable: Dict) -> None:
+    def initialize_trains_from_timetable(self, timetable) -> None:
         """Initialize train positions from timetable data"""
         self.trains.clear()
+        
+        # Handle both list and dictionary formats
+        if isinstance(timetable, list):
+            # Convert list format to dictionary format for processing
+            timetable_dict = {}
+            for slot in timetable:
+                time_slot = slot.get('time_slot', '06:00-06:30')
+                timetable_dict[time_slot] = slot
+            timetable = timetable_dict
         
         # Handle timetable as dictionary with time_slot keys
         for time_slot, slot_data in timetable.items():
@@ -333,8 +342,17 @@ class TimetableAnalyzer:
     def __init__(self):
         self.analysis_results = {}
     
-    def analyze_timetable(self, timetable: Dict) -> Dict:
+    def analyze_timetable(self, timetable) -> Dict:
         """Analyze timetable for overlaps and optimization opportunities"""
+        # Handle both list and dictionary formats
+        if isinstance(timetable, list):
+            # Convert list format to dictionary format for processing
+            timetable_dict = {}
+            for slot in timetable:
+                time_slot = slot.get('time_slot', '06:00-06:30')
+                timetable_dict[time_slot] = slot
+            timetable = timetable_dict
+        
         analysis = {
             'total_slots': len(timetable),
             'peak_slots': 0,
@@ -377,7 +395,7 @@ class TimetableAnalyzer:
         
         return analysis
     
-    def _detect_overlaps(self, timetable: Dict) -> List[Dict]:
+    def _detect_overlaps(self, timetable) -> List[Dict]:
         """Detect potential timetable overlaps"""
         overlaps = []
         time_slots = list(timetable.keys())
