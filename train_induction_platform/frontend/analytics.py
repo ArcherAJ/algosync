@@ -55,6 +55,119 @@ def create_analytics_tab():
         with col3:
             st.metric("Estimated Savings", f"₹{metrics.get('estimated_savings', 0):,}")
             st.metric("Energy Efficiency", f"{metrics.get('energy_efficiency', 0)}%")
+    # IoT Sensors Analytics
+    st.subheader("📡 IoT Sensors Analytics")
+    
+    if 'system_manager' in st.session_state:
+        system_manager = st.session_state.system_manager
+        
+        # Get IoT sensor summary
+        sensor_summary = system_manager.iot_manager.get_fleet_sensor_summary()
+        
+        if sensor_summary:
+            # Calculate sensor counts from sensor_stats
+            sensor_stats = sensor_summary.get('sensor_stats', {})
+            total_sensors = sum(sum(stats.values()) for stats in sensor_stats.values())
+            healthy_sensors = sum(stats.get('normal', 0) for stats in sensor_stats.values())
+            warning_sensors = sum(stats.get('warning', 0) for stats in sensor_stats.values())
+            critical_sensors = sum(stats.get('critical', 0) for stats in sensor_stats.values())
+            
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Total Trainsets", sensor_summary.get('total_trainsets', 0))
+            
+            with col2:
+                st.metric("Fleet Health Score", f"{sensor_summary.get('health_score', 0):.1f}%")
+            
+            with col3:
+                st.metric("Active Alerts", len(sensor_summary.get('alerts', [])))
+            
+            with col4:
+                st.metric("Total Sensors", total_sensors)
+            
+            # Sensor health distribution
+            if total_sensors > 0:
+                st.write("**Sensor Health Distribution:**")
+                health_data = {
+                    'Normal': healthy_sensors,
+                    'Warning': warning_sensors,
+                    'Critical': critical_sensors
+                }
+                
+                fig = px.pie(values=list(health_data.values()), names=list(health_data.keys()),
+                            title="Sensor Health Distribution",
+                            color_discrete_map={'Normal': '#28a745', 'Warning': '#ffc107', 'Critical': '#dc3545'})
+                st.plotly_chart(fig, use_container_width=True)
+            
+            # Sensor alerts
+            alerts = sensor_summary.get('alerts', [])
+            if alerts:
+                st.write("**Recent Sensor Alerts:**")
+                alerts_df = pd.DataFrame(alerts[:10])  # Show last 10 alerts
+                st.dataframe(alerts_df, use_container_width=True)
+            else:
+                st.success("✅ No active sensor alerts")
+        else:
+            st.info("IoT sensor data not available")
+    
+    # Smart Systems Analytics
+    st.subheader("🏢 Smart Systems Analytics")
+    
+    if 'system_manager' in st.session_state:
+        # Get station summary
+        station_summary = system_manager.station_manager.get_fleet_station_summary()
+        
+        if station_summary:
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Total Stations", station_summary['total_stations'])
+            
+            with col2:
+                st.metric("Overall Health", f"{station_summary['overall_health']:.1f}%")
+            
+            with col3:
+                st.metric("Crowd Alerts", len(station_summary['crowd_alerts']))
+            
+            with col4:
+                critical_stations = len([s for s in station_summary['stations'] if s['status'] == 'Critical'])
+                st.metric("Critical Stations", critical_stations)
+            
+            # Station health overview
+            st.write("**Station Health Overview:**")
+            if station_summary['stations']:
+                stations_df = pd.DataFrame(station_summary['stations'])
+                
+                # Station health chart
+                fig = px.bar(stations_df, x='station_id', y='health_score',
+                            title="Station Health Scores",
+                            color='health_score',
+                            color_continuous_scale=['red', 'yellow', 'green'])
+                fig.update_xaxes(tickangle=45)
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # Station capacity utilization
+                st.write("**Station Capacity Utilization:**")
+                capacity_data = []
+                for station in station_summary['stations']:
+                    capacity_data.append({
+                        'Station': station['station_id'],
+                        'Current Capacity': station.get('current_capacity', 0),
+                        'Max Capacity': station.get('max_capacity', 100),
+                        'Utilization %': (station.get('current_capacity', 0) / station.get('max_capacity', 100)) * 100
+                    })
+                
+                capacity_df = pd.DataFrame(capacity_data)
+                fig = px.bar(capacity_df, x='Station', y='Utilization %',
+                            title="Station Capacity Utilization",
+                            color='Utilization %',
+                            color_continuous_scale=['green', 'yellow', 'red'])
+                fig.update_xaxes(tickangle=45)
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("Smart systems data not available")
+    
     # Export options
     st.subheader("📊 Export Options")
     col1, col2, col3 = st.columns(3)

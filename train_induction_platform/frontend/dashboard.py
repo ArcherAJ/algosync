@@ -130,6 +130,73 @@ def create_dashboard_tab():
             </div>
             """, unsafe_allow_html=True)
     
+    # Weather monitoring section
+    st.subheader("🌤️ Weather Monitoring")
+    
+    # Initialize system manager for weather data
+    if 'system_manager' in st.session_state:
+        system_manager = st.session_state.system_manager
+        
+        # Get weather insights
+        weather_insights = system_manager.weather_integrator.get_weather_insights()
+        
+        if weather_insights:
+            current_weather = weather_insights.get('current_weather', {})
+            
+            if current_weather:
+                col1, col2, col3, col4 = st.columns(4)
+                
+                with col1:
+                    st.metric("Current Temperature", f"{current_weather.get('temperature', 0):.1f}°C")
+                
+                with col2:
+                    st.metric("Humidity", f"{current_weather.get('humidity', 0):.1f}%")
+                
+                with col3:
+                    st.metric("Wind Speed", f"{current_weather.get('wind_speed', 0):.1f} m/s")
+                
+                with col4:
+                    weather_status = current_weather.get('weather_condition', 'Unknown')
+                    status_color = {
+                        'Sunny': '🟡',
+                        'Cloudy': '⚪',
+                        'Rainy': '🔵',
+                        'Stormy': '🔴',
+                        'Clear': '🟡',
+                        'Clouds': '⚪',
+                        'Rain': '🔵',
+                        'Thunderstorm': '🔴'
+                    }.get(weather_status, '⚪')
+                    st.metric("Weather Condition", f"{status_color} {weather_status}")
+            else:
+                st.info("🌤️ Weather data not available. Please check your weather API configuration.")
+            
+            # Weather impact on operations
+            st.write("**Weather Impact on Operations:**")
+            impact_factor = weather_insights.get('impact_factor', 0)
+            
+            col_a, col_b, col_c = st.columns(3)
+            with col_a:
+                st.metric("Overall Impact Factor", f"{impact_factor:.2f}")
+            with col_b:
+                st.metric("Weather Condition", current_weather.get('weather_description', 'Unknown'))
+            with col_c:
+                st.metric("Data Source", current_weather.get('data_source', 'Unknown'))
+            
+            # Weather forecast
+            st.write("**7-Day Weather Forecast:**")
+            forecast_data = weather_insights.get('forecast', [])
+            
+            if forecast_data:
+                forecast_df = pd.DataFrame(forecast_data)
+                fig = px.line(forecast_df, x='datetime', y='temperature',
+                             title="Temperature Forecast",
+                             labels={'temperature': 'Temperature (°C)', 'datetime': 'Date & Time'})
+                fig.update_xaxes(tickangle=45)
+                st.plotly_chart(fig, use_container_width=True)
+        else:
+            st.info("Weather data not available")
+    
     # Recent activity timeline
     st.subheader("Recent System Activity")
     activity_data = []
@@ -143,7 +210,8 @@ def create_dashboard_tab():
                 'Job card closed',
                 'Maintenance scheduled',
                 'Branding assignment changed',
-                'IOT sensor data received'
+                'IOT sensor data received',
+                'Weather data updated'
             ]),
             'Trainset': random.choice([t['id'] for t in trainsets[:10]])
         })

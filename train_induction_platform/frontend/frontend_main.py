@@ -10,7 +10,6 @@ from frontend.analytics import create_analytics_tab
 from frontend.maps import create_map
 from frontend.timetable_f import create_timetable_tab
 from frontend.passenger_demand import create_passenger_demand_tab
-from frontend.advanced_analytics import create_weather_section, create_iot_sensors_section, create_smart_stations_section
 
 
 
@@ -104,9 +103,9 @@ def create_streamlit_frontend():
             status_icon = "🟢" if status['connected'] else "🔴"
             st.write(f"{status_icon} {source.replace('_', ' ').title()}")
     # Main dashboard tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
         "📊 Dashboard", "🚆 Fleet Status", "🔧 Maintenance", 
-        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable", "🚆 Passenger Demand", "🌤️ Advanced Analytics"
+        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable", "🚆 Passenger Demand"
     ])
     with tab1:
         create_dashboard_tab()
@@ -126,19 +125,3 @@ def create_streamlit_frontend():
         create_timetable_tab()
     with tab9:
         create_passenger_demand_tab()
-    with tab10:
-        st.header("🌤️ Advanced Analytics & Smart Systems")
-        
-        # Create sub-tabs for different advanced analytics
-        sub_tab1, sub_tab2, sub_tab3 = st.tabs([
-            "🌤️ Weather Monitoring", "📡 IoT Sensors", "🏢 Smart Stations"
-        ])
-        
-        with sub_tab1:
-            create_weather_section(st.session_state.system_manager)
-        
-        with sub_tab2:
-            create_iot_sensors_section(st.session_state.system_manager)
-        
-        with sub_tab3:
-            create_smart_stations_section(st.session_state.system_manager)
