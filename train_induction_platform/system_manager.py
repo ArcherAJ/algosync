@@ -9,6 +9,9 @@ from reports import ReportGenerator
 from passenger_demand_predictor import PassengerDemandPredictor
 from energy_optimizer import EnergyConsumptionOptimizer
 from fleet_analytics import FleetPerformanceAnalytics
+from weather_integrator import WeatherDataIntegrator
+from iot_sensor_manager import IoTSensorManager
+from smart_station_manager import SmartStationManager
 
 from timetable_b import TimetableGenerator
 
@@ -26,6 +29,11 @@ class SystemIntegrationManager:
         self.energy_optimizer = EnergyConsumptionOptimizer()
         self.fleet_analytics = FleetPerformanceAnalytics()
         
+        # Initialize advanced modules
+        self.weather_integrator = WeatherDataIntegrator()
+        self.iot_manager = IoTSensorManager()
+        self.station_manager = SmartStationManager()
+        
         self.last_optimization_time = None
         self.optimization_history = []
         
@@ -42,6 +50,10 @@ class SystemIntegrationManager:
         self.energy_optimizer.load_data()
         self.energy_optimizer.train_models()
         self.fleet_analytics.train_models(trainsets)
+        
+        # Initialize advanced modules
+        self.iot_manager.initialize_sensors(trainsets)
+        self.station_manager.initialize_stations()
         
         return trainsets
     def run_complete_optimization(self, trainsets, constraints):
@@ -168,6 +180,30 @@ class SystemIntegrationManager:
     def predict_failure_severity(self, trainset):
         """Predict failure severity for a trainset"""
         return self.ml_model.predict_failure_severity(trainset)
+    
+    def get_weather_insights(self):
+        """Get comprehensive weather insights"""
+        return self.weather_integrator.get_weather_insights()
+    
+    def get_iot_sensor_summary(self):
+        """Get IoT sensor summary for entire fleet"""
+        return self.iot_manager.get_fleet_sensor_summary()
+    
+    def get_station_summary(self):
+        """Get smart station summary"""
+        return self.station_manager.get_fleet_station_summary()
+    
+    def simulate_real_time_updates(self):
+        """Simulate real-time updates for all systems"""
+        trainsets = st.session_state.trainsets if 'trainsets' in st.session_state else []
+        
+        # Update IoT sensors
+        self.iot_manager.simulate_sensor_updates(trainsets)
+        
+        # Update station data
+        self.station_manager.simulate_station_updates()
+        
+        return True
 
     def reset_system(self):
         """Reset the system to initial state"""
