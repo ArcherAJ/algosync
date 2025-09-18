@@ -7,39 +7,65 @@ def create_analytics_tab():
     st.markdown("""
     <style>
     .analytics-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        padding: 3rem 2rem;
+        border-radius: 25px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 
+            0 20px 40px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    
+    .analytics-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        animation: shimmer 3s ease-in-out infinite;
     }
     
     .analytics-card {
-        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-        padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
         margin: 1rem 0;
-        border: 1px solid #e9ecef;
-        transition: all 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     
     .analytics-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        transform: translateY(-8px);
+        box-shadow: 
+            0 25px 50px rgba(0,0,0,0.15),
+            0 0 0 1px rgba(255,255,255,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.3);
     }
     
     .section-title {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        padding: 1rem 1.5rem;
-        border-radius: 10px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        padding: 1.5rem 2rem;
+        border-radius: 15px;
         margin: 1.5rem 0 1rem 0;
         border-left: 4px solid #667eea;
-        font-size: 1.3rem;
-        font-weight: 600;
+        font-size: 1.4rem;
+        font-weight: 700;
         color: #495057;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(102, 126, 234, 0.2);
     }
     
     .metric-grid {
@@ -87,8 +113,19 @@ def create_analytics_tab():
     # Enhanced Analytics Header
     st.markdown("""
     <div class="analytics-header">
-        <h1 style="margin: 0; font-size: 2rem; font-weight: 700;">📈 Analytics & Performance Trends</h1>
-        <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1.1rem;">Comprehensive insights and data-driven analytics</p>
+        <h1 style="margin: 0; font-size: 2.5rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">📈 Analytics & Performance Trends</h1>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1.2rem; font-weight: 400;">Comprehensive insights and data-driven analytics</p>
+        <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">
+                📊 Advanced Metrics
+            </span>
+            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">
+                🔍 Deep Insights
+            </span>
+            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">
+                📈 Trend Analysis
+            </span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     # Historical trends

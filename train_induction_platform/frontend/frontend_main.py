@@ -34,47 +34,111 @@ def create_streamlit_frontend():
     st.markdown("""
     <style>
     /* Import Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
     
     /* Global Styles */
     .main {
         font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+    
+    /* Animated Background */
+    .main::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.3) 0%, transparent 50%);
+        animation: backgroundShift 20s ease-in-out infinite;
+        z-index: -1;
+    }
+    
+    @keyframes backgroundShift {
+        0%, 100% { transform: translateX(0) translateY(0); }
+        25% { transform: translateX(-20px) translateY(-10px); }
+        50% { transform: translateX(20px) translateY(10px); }
+        75% { transform: translateX(-10px) translateY(20px); }
     }
     
     /* Header Styling */
     .main-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        padding: 3rem 2rem;
+        border-radius: 25px;
         margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 
+            0 20px 40px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
         color: white;
         text-align: center;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    
+    .main-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        animation: shimmer 3s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
     }
     
     .main-header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
+        font-family: 'Poppins', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
         text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        background: linear-gradient(45deg, #fff, #f0f0f0, #fff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: textGlow 2s ease-in-out infinite alternate;
+    }
+    
+    @keyframes textGlow {
+        0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
+        100% { filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)); }
     }
     
     .main-header p {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        font-weight: 300;
+        font-size: 1.4rem;
+        opacity: 0.95;
+        font-weight: 400;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     }
     
     /* Enhanced Metric Cards */
     .metric-card {
-        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-        padding: 1.5rem;
-        border-radius: 15px;
-        border: none;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         position: relative;
         overflow: hidden;
+        text-align: center;
     }
     
     .metric-card::before {
@@ -82,14 +146,61 @@ def create_streamlit_frontend():
         position: absolute;
         top: 0;
         left: 0;
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+    
+    .metric-card:hover::before {
+        transform: scaleX(1);
     }
     
     .metric-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 
+            0 25px 50px rgba(0,0,0,0.15),
+            0 0 0 1px rgba(255,255,255,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    
+    .metric-card .metric-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .metric-card .metric-value {
+        font-size: 2.8rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .metric-card .metric-delta {
+        font-size: 0.85rem;
+        color: #28a745;
+        font-weight: 600;
+        background: rgba(40, 167, 69, 0.1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        display: inline-block;
+        border: 1px solid rgba(40, 167, 69, 0.2);
+    }
+    
+    .metric-card .metric-delta.negative {
+        color: #dc3545;
+        background: rgba(220, 53, 69, 0.1);
+        border-color: rgba(220, 53, 69, 0.2);
     }
     
     /* Alert Cards */
@@ -143,52 +254,129 @@ def create_streamlit_frontend():
     
     /* Tab Enhancement */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
+        gap: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .stTabs [data-baseweb="tab"] {
-        background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 10px;
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 12px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #6c757d;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stTabs [data-baseweb="tab"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover::before {
+        opacity: 1;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        color: #495057;
     }
     
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 
+            0 10px 30px rgba(102, 126, 234, 0.3),
+            0 0 0 1px rgba(255,255,255,0.2);
+        transform: translateY(-3px);
+    }
+    
+    .stTabs [aria-selected="true"]::before {
+        opacity: 0;
     }
     
     /* Button Enhancements */
     .stButton > button {
-        background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
-        border-radius: 10px;
-        padding: 0.5rem 1.5rem;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        border-radius: 15px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 
+            0 8px 25px rgba(102, 126, 234, 0.3),
+            0 0 0 1px rgba(255,255,255,0.1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .stButton > button:hover::before {
+        left: 100%;
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 
+            0 15px 35px rgba(102, 126, 234, 0.4),
+            0 0 0 1px rgba(255,255,255,0.2);
+    }
+    
+    .stButton > button:active {
+        transform: translateY(-1px) scale(1.02);
     }
     
     /* Chart Containers */
     .stPlotlyChart {
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        border-radius: 20px;
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1);
         overflow: hidden;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     /* Dataframe Styling */
     .stDataFrame {
-        border-radius: 15px;
+        border-radius: 20px;
         overflow: hidden;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1);
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     /* Success/Error Messages */
@@ -239,35 +427,309 @@ def create_streamlit_frontend():
     }
     
     /* Responsive Design */
-    @media (max-width: 768px) {
+    @media (max-width: 1200px) {
         .main-header h1 {
-            font-size: 2rem;
+            font-size: 3rem;
         }
+        .main-header p {
+            font-size: 1.2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .main-header {
+            padding: 2rem 1rem;
+            border-radius: 20px;
+        }
+        
+        .main-header h1 {
+            font-size: 2.2rem;
+        }
+        
         .main-header p {
             font-size: 1rem;
         }
+        
         .metric-card {
-            padding: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 2.2rem;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .stButton > button {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
         }
     }
     
-    /* Scrollbar Styling */
-    ::-webkit-scrollbar {
-        width: 8px;
+    @media (max-width: 480px) {
+        .main-header {
+            padding: 1.5rem 0.8rem;
+        }
+        
+        .main-header h1 {
+            font-size: 1.8rem;
+        }
+        
+        .main-header p {
+            font-size: 0.9rem;
+        }
+        
+        .metric-card {
+            padding: 1rem;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 1.8rem;
+        }
+        
+        .metric-card .metric-title {
+            font-size: 0.8rem;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.8rem;
+        }
     }
     
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
+    /* Tablet Landscape */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .main-header h1 {
+            font-size: 2.8rem;
+        }
+        
+        .metric-card {
+            padding: 1.8rem;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 2.5rem;
+        }
     }
     
-    ::-webkit-scrollbar-thumb {
+    /* Large Desktop */
+    @media (min-width: 1400px) {
+        .main-header h1 {
+            font-size: 4rem;
+        }
+        
+        .main-header p {
+            font-size: 1.5rem;
+        }
+        
+        .metric-card {
+            padding: 2.5rem;
+        }
+        
+        .metric-card .metric-value {
+            font-size: 3.5rem;
+        }
+    }
+    
+    /* Dark Mode Styles */
+    .dark-mode {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+        color: #e0e0e0;
+    }
+    
+    .dark-mode .main-header {
+        background: linear-gradient(135deg, #2d3748 0%, #4a5568 50%, #718096 100%);
+    }
+    
+    .dark-mode .metric-card {
+        background: rgba(45, 55, 72, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #e0e0e0;
+    }
+    
+    .dark-mode .stTabs [data-baseweb="tab"] {
+        background: rgba(45, 55, 72, 0.8);
+        color: #e0e0e0;
+    }
+    
+    /* Loading States and Skeleton Screens */
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        border-radius: 8px;
+    }
+    
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    
+    .skeleton-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    }
+    
+    .skeleton-title {
+        height: 20px;
+        width: 60%;
+        margin-bottom: 1rem;
+    }
+    
+    .skeleton-value {
+        height: 40px;
+        width: 80%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .skeleton-delta {
+        height: 16px;
+        width: 40%;
+    }
+    
+    /* Enhanced Loading Spinner */
+    .modern-spinner {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(102, 126, 234, 0.1);
+        border-radius: 50%;
+        border-top-color: #667eea;
+        animation: modernSpin 1s ease-in-out infinite;
+    }
+    
+    @keyframes modernSpin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Progress Bar */
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        border-radius: 3px;
+        animation: progressFill 2s ease-in-out infinite;
+    }
+    
+    @keyframes progressFill {
+        0% { width: 0%; }
+        50% { width: 70%; }
+        100% { width: 100%; }
+    }
+    
+    /* Notification Toast */
+    .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 1rem 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        z-index: 1000;
+        animation: slideInRight 0.3s ease-out;
+    }
+    
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    
+    .toast-success {
+        border-left: 4px solid #4ade80;
+    }
+    
+    .toast-error {
+        border-left: 4px solid #ef4444;
+    }
+    
+    .toast-warning {
+        border-left: 4px solid #fbbf24;
+    }
+    
+    .toast-info {
+        border-left: 4px solid #3b82f6;
+    }
+    
+    /* Pulse Animation */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    /* Floating Elements */
+    .floating-element {
+        animation: float 6s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+    
+    /* Interactive Hover Effects */
+    .interactive-card {
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .interactive-card:hover {
+        transform: translateY(-5px) rotateX(5deg);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    
+    /* Gradient Text */
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 800;
+    }
+    
+    /* Status Indicators */
+    .status-indicator {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-right: 8px;
+        animation: pulse 2s infinite;
+    }
+    
+    .status-online { background: #4ade80; }
+    .status-warning { background: #fbbf24; }
+    .status-offline { background: #ef4444; }
+    
+    /* Custom Scrollbar for Dark Mode */
+    .dark-mode ::-webkit-scrollbar-track {
+        background: #2d3748;
+    }
+    
+    .dark-mode ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #4a5568 0%, #718096 100%);
+    }
+    
+    .dark-mode ::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-        border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(180deg, #5a6fd8 0%, #6a4190 100%);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -275,16 +737,25 @@ def create_streamlit_frontend():
     st.markdown("""
     <div class="main-header fade-in-up">
         <h1>🚇 KMRL AI Induction Planning Platform</h1>
-        <p>Enhanced AI-powered decision support with multi-objective optimization</p>
-        <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
-            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">
-                🤖 AI-Powered
+        <p>Next-Generation AI-Powered Metro Fleet Management & Optimization</p>
+        <div style="margin-top: 2rem; display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap;">
+            <span style="background: rgba(255,255,255,0.25); padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 1rem; font-weight: 600; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                🤖 Advanced AI Analytics
             </span>
-            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">
-                📊 Real-time Analytics
+            <span style="background: rgba(255,255,255,0.25); padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 1rem; font-weight: 600; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                📊 Real-time Intelligence
             </span>
-            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem;">
+            <span style="background: rgba(255,255,255,0.25); padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 1rem; font-weight: 600; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
                 ⚡ Smart Optimization
+            </span>
+            <span style="background: rgba(255,255,255,0.25); padding: 0.8rem 1.5rem; border-radius: 25px; font-size: 1rem; font-weight: 600; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                🔮 Predictive Analytics
+            </span>
+        </div>
+        <div style="margin-top: 1.5rem; font-size: 0.9rem; opacity: 0.8;">
+            <span style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                <span style="width: 8px; height: 8px; background: #4ade80; border-radius: 50%; animation: pulse 2s infinite;"></span>
+                System Status: Operational
             </span>
         </div>
     </div>
@@ -292,13 +763,26 @@ def create_streamlit_frontend():
     # Enhanced Sidebar - Control Panel
     with st.sidebar:
         st.markdown("""
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                    padding: 1.5rem; border-radius: 15px; margin-bottom: 1rem; color: white;">
-            <h2 style="margin: 0; font-size: 1.5rem; text-align: center;">⚙️ Control Panel</h2>
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); 
+                    padding: 2rem; border-radius: 20px; margin-bottom: 1.5rem; color: white;
+                    box-shadow: 0 15px 35px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+                    border: 1px solid rgba(255,255,255,0.2);">
+            <h2 style="margin: 0; font-size: 1.6rem; text-align: center; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">⚙️ Control Center</h2>
+            <p style="margin: 0.5rem 0 0 0; text-align: center; opacity: 0.9; font-size: 0.9rem;">AI-Powered Fleet Management</p>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Dark Mode Toggle
+        if 'dark_mode' not in st.session_state:
+            st.session_state.dark_mode = False
+        
+        dark_mode = st.checkbox("🌙 Dark Mode", value=st.session_state.dark_mode)
+        if dark_mode != st.session_state.dark_mode:
+            st.session_state.dark_mode = dark_mode
+            st.rerun()
+        
         # Auto-refresh toggle
-        st.session_state.auto_refresh = st.checkbox("Auto-refresh (30s)", value=st.session_state.auto_refresh)
+        st.session_state.auto_refresh = st.checkbox("🔄 Auto-refresh (30s)", value=st.session_state.auto_refresh)
         if st.session_state.auto_refresh:
             time.sleep(30)
             st.rerun()

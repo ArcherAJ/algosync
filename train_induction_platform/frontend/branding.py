@@ -197,40 +197,89 @@ def create_branding_tab():
     st.markdown("""
     <style>
     .metric-card {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         text-align: center;
         width: 100%;
-        height: 150px;
+        height: 180px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+        overflow: hidden;
     }
+    
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+    
+    .metric-card:hover::before {
+        transform: scaleX(1);
+    }
+    
     .metric-card:hover {
-        transform: scale(1.03);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        transform: translateY(-8px) scale(1.05);
+        box-shadow: 
+            0 25px 50px rgba(0,0,0,0.15),
+            0 0 0 1px rgba(255,255,255,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.3);
     }
+    
     .metric-title {
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 1rem;
+        font-weight: 700;
         color: #333;
-        margin-bottom: 10px;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
+    
     .metric-value {
-        font-size: 28px;
-        font-weight: bold;
-        color: #007bff;
+        font-size: 2.2rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
     }
+    
     .metric-delta {
-        font-size: 14px;
+        font-size: 0.9rem;
         color: #28a745;
+        font-weight: 600;
+        background: rgba(40, 167, 69, 0.1);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        border: 1px solid rgba(40, 167, 69, 0.2);
     }
+    
     .ml-section {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-        margin: 20px 0;
-        border-left: 4px solid #007bff;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        margin: 2rem 0;
+        border-left: 4px solid #667eea;
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
     </style>
     """, unsafe_allow_html=True)

@@ -7,25 +7,46 @@ def create_dashboard_tab():
     st.markdown("""
     <style>
     .dashboard-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        padding: 3rem 2rem;
+        border-radius: 25px;
         margin-bottom: 2rem;
         color: white;
         text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 
+            0 20px 40px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+    }
+    
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        animation: shimmer 3s ease-in-out infinite;
     }
     
     .metric-card {
-        background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-        padding: 1.5rem;
-        border-radius: 15px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        padding: 2rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.1),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.2);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         text-align: center;
         position: relative;
         overflow: hidden;
-        border: none;
     }
     
     .metric-card::before {
@@ -33,48 +54,61 @@ def create_dashboard_tab():
         position: absolute;
         top: 0;
         left: 0;
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+    
+    .metric-card:hover::before {
+        transform: scaleX(1);
     }
     
     .metric-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        transform: translateY(-10px) scale(1.05);
+        box-shadow: 
+            0 25px 50px rgba(0,0,0,0.15),
+            0 0 0 1px rgba(255,255,255,0.2),
+            inset 0 1px 0 rgba(255,255,255,0.3);
     }
     
     .metric-title {
-        font-size: 1rem;
+        font-size: 0.9rem;
         font-weight: 600;
-        color: #495057;
+        color: #6c757d;
         margin-bottom: 0.5rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
     }
     
     .metric-value {
-        font-size: 2.5rem;
-        font-weight: 700;
+        font-size: 3rem;
+        font-weight: 800;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
     
     .metric-delta {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #28a745;
-        font-weight: 500;
+        font-weight: 600;
         background: rgba(40, 167, 69, 0.1);
-        padding: 0.25rem 0.5rem;
+        padding: 0.3rem 0.8rem;
         border-radius: 20px;
         display: inline-block;
+        border: 1px solid rgba(40, 167, 69, 0.2);
     }
     
     .metric-delta.negative {
         color: #dc3545;
         background: rgba(220, 53, 69, 0.1);
+        border-color: rgba(220, 53, 69, 0.2);
     }
     
     .section-header {
@@ -118,8 +152,19 @@ def create_dashboard_tab():
     # Enhanced Dashboard Header
     st.markdown("""
     <div class="dashboard-header">
-        <h1 style="margin: 0; font-size: 2rem; font-weight: 700;">📊 Real-time Fleet Dashboard</h1>
-        <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1.1rem;">Live monitoring and analytics for your metro fleet</p>
+        <h1 style="margin: 0; font-size: 2.5rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">📊 Real-time Fleet Dashboard</h1>
+        <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1.2rem; font-weight: 400;">Live monitoring and analytics for your metro fleet</p>
+        <div style="margin-top: 1.5rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">
+                🔴 Live Data
+            </span>
+            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">
+                ⚡ Real-time Updates
+            </span>
+            <span style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.9rem; font-weight: 500;">
+                📈 Performance Metrics
+            </span>
+        </div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -151,7 +196,7 @@ def create_dashboard_tab():
         ibl_count = sum(1 for t in trainsets if t['recommendation'] == 'IBL')
         st.markdown(f"""
         <div class="metric-card">
-            <div class="metric-title">🔧 IBL/Maintenance</div>
+            <div class="metric-title">🔧 IBL</div>
             <div class="metric-value">{ibl_count}</div>
             <div class="metric-delta">In Service</div>
         </div>
