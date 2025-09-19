@@ -327,6 +327,38 @@ def create_live_map_section(tracker: TrainTracker):
         if st.button("📊 Show Statistics", key="show_stats"):
             st.rerun()
     
+    # IBM Maximo Integration Controls
+    st.subheader("🔧 IBM Maximo Integration")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        maximo_status = tracker.get_maximo_status()
+        if maximo_status['connected']:
+            st.success("✅ Maximo Connected")
+        else:
+            st.warning("⚠️ Maximo Disconnected")
+    
+    with col2:
+        if st.button("🔗 Connect Maximo", key="connect_maximo"):
+            if tracker.enable_maximo_sync():
+                st.success("✅ Connected to IBM Maximo")
+            else:
+                st.error("❌ Failed to connect to Maximo")
+    
+    with col3:
+        if st.button("🔄 Sync with Maximo", key="sync_maximo"):
+            with st.spinner("Syncing with Maximo..."):
+                sync_results = tracker.sync_all_trains_with_maximo()
+                if 'error' not in sync_results:
+                    st.success(f"✅ Synced {sync_results['trains_synced']} trains")
+                else:
+                    st.error(f"❌ Sync failed: {sync_results['error']}")
+    
+    # Show Maximo status details
+    if maximo_status['connected']:
+        st.info(f"**Maximo Server:** {maximo_status['server_url']} | **Last Sync:** {maximo_status['last_sync'] or 'Never'}")
+    
     # Show map statistics
     st.subheader("📊 Map Statistics")
     col1, col2, col3, col4 = st.columns(4)

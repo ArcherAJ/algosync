@@ -1,5 +1,6 @@
 from common_imports import *
 from typing import List, Dict, Any, Tuple
+from ibm_maximo_integration import IBMMaximoIntegration, MaximoDataAdapter
 
 class AITimetableOptimizer:
     """
@@ -24,6 +25,11 @@ class AITimetableOptimizer:
         self.route_optimizer = None
         self.scaler = StandardScaler()
         self.is_trained = False
+        
+        # Initialize IBM Maximo integration
+        self.maximo = IBMMaximoIntegration()
+        self.maximo_connected = False
+        self.maximo_sync_enabled = True
         
     def _generate_time_slots(self) -> List[str]:
         """Generate 30-minute time slots from 05:00 to 23:30"""
@@ -553,6 +559,112 @@ class AITimetableOptimizer:
             recommendations.append("Rebalance route assignments for better distribution")
         
         return recommendations
+    
+    def enable_maximo_integration(self) -> bool:
+        """Enable Maximo integration for timetable optimization"""
+        self.maximo_sync_enabled = True
+        if not self.maximo_connected:
+            self.maximo_connected = self.maximo.connect()
+        return self.maximo_connected
+    
+    def disable_maximo_integration(self) -> None:
+        """Disable Maximo integration"""
+        self.maximo_sync_enabled = False
+    
+    def optimize_timetable_with_maximo(self, trainsets: List[Dict], constraints: Dict = None) -> Dict:
+        """
+        Optimize timetable with Maximo integration for asset management
+        
+        Args:
+            trainsets: List of trainset data
+            constraints: Optimization constraints
+            
+        Returns:
+            Optimized timetable with Maximo integration
+        """
+        # Connect to Maximo if enabled
+        if self.maximo_sync_enabled and not self.maximo_connected:
+            self.maximo_connected = self.maximo.connect()
+        
+        # Get Maximo maintenance schedule if connected
+        maintenance_schedule = []
+        if self.maximo_connected:
+            maintenance_schedule = self.maximo.get_preventive_maintenance_schedule(30)
+        
+        # Filter trainsets based on Maximo maintenance schedule
+        available_trainsets = self._filter_trainsets_by_maintenance(trainsets, maintenance_schedule)
+        
+        # Run standard optimization
+        timetable = self.optimize_timetable(available_trainsets, constraints)
+        
+        # Sync optimized timetable with Maximo
+        if self.maximo_connected:
+            self._sync_timetable_with_maximo(timetable, trainsets)
+        
+        return timetable
+    
+    def _filter_trainsets_by_maintenance(self, trainsets: List[Dict], maintenance_schedule: List[Dict]) -> List[Dict]:
+        """Filter trainsets based on Maximo maintenance schedule"""
+        # Get trainsets that are scheduled for maintenance
+        maintenance_trainsets = set()
+        for maintenance in maintenance_schedule:
+            asset_id = maintenance.get('assetnum', '')
+            maintenance_trainsets.add(asset_id)
+        
+        # Filter out trainsets that are scheduled for maintenance
+        available_trainsets = []
+        for trainset in trainsets:
+            trainset_id = trainset.get('trainset_id', trainset.get('id', ''))
+            if trainset_id not in maintenance_trainsets:
+                available_trainsets.append(trainset)
+        
+        return available_trainsets
+    
+    def _sync_timetable_with_maximo(self, timetable: Dict, trainsets: List[Dict]) -> None:
+        """Sync optimized timetable with Maximo"""
+        try:
+            # Create assets for trainsets used in timetable
+            used_trainsets = set()
+            for slot_data in timetable.values():
+                for train in slot_data.get('trains', []):
+                    trainset_id = train.get('trainset_id', '')
+                    if trainset_id not in used_trainsets:
+                        # Find trainset data
+                        trainset_data = next((t for t in trainsets if t.get('trainset_id', t.get('id', '')) == trainset_id), None)
+                        if trainset_data:
+                            self.maximo.create_trainset_asset(trainset_data)
+                            used_trainsets.add(trainset_id)
+            
+            print(f"✅ Synced {len(used_trainsets)} trainsets with Maximo")
+            
+        except Exception as e:
+            print(f"❌ Error syncing timetable with Maximo: {e}")
+    
+    def get_maximo_asset_status(self, trainset_id: str) -> Dict:
+        """Get asset status from Maximo"""
+        if not self.maximo_connected:
+            return {'error': 'Maximo not connected'}
+        
+        try:
+            # This would typically be a GET request to Maximo
+            # For now, return mock data
+            return {
+                'asset_id': trainset_id,
+                'status': 'ACTIVE',
+                'last_inspection': datetime.now().strftime('%Y-%m-%d'),
+                'next_inspection': (datetime.now() + timedelta(days=30)).strftime('%Y-%m-%d'),
+                'maintenance_cost': 0.0,
+                'criticality': 'MEDIUM'
+            }
+        except Exception as e:
+            return {'error': str(e)}
+    
+    def get_maximo_maintenance_schedule(self, days_ahead: int = 30) -> List[Dict]:
+        """Get maintenance schedule from Maximo"""
+        if not self.maximo_connected:
+            return []
+        
+        return self.maximo.get_preventive_maintenance_schedule(days_ahead)
 
 # Example usage and testing
 if __name__ == "__main__":

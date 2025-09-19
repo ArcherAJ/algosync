@@ -1,4 +1,6 @@
 from common_imports import *
+from ibm_maximo_integration import IBMMaximoIntegration, MaximoDataAdapter
+from typing import Dict, List, Optional
 
 class PredictiveMaintenanceModel:
     def __init__(self):
@@ -8,6 +10,11 @@ class PredictiveMaintenanceModel:
         self.scaler = StandardScaler()
         self.is_trained = False
         self.feature_importance = None
+        
+        # Initialize IBM Maximo integration
+        self.maximo = IBMMaximoIntegration()
+        self.maximo_connected = False
+        self.maximo_sync_enabled = True
         
     def prepare_training_data(self, historical_data):
         """Prepare training data from historical records"""
@@ -234,8 +241,93 @@ class PredictiveMaintenanceModel:
             'feature_importance': self.feature_importance.tolist() if self.feature_importance is not None else None,
             'model_type': 'Random Forest Regressor',
             'cost_model_type': 'Gradient Boosting Regressor',
-            'severity_model_type': 'Random Forest Classifier'
+            'severity_model_type': 'Random Forest Classifier',
+            'maximo_connected': self.maximo_connected,
+            'maximo_sync_enabled': self.maximo_sync_enabled
         }
+    
+    def enable_maximo_integration(self) -> bool:
+        """Enable Maximo integration for maintenance predictions"""
+        self.maximo_sync_enabled = True
+        if not self.maximo_connected:
+            self.maximo_connected = self.maximo.connect()
+        return self.maximo_connected
+    
+    def disable_maximo_integration(self) -> None:
+        """Disable Maximo integration"""
+        self.maximo_sync_enabled = False
+    
+    def sync_predictions_with_maximo(self, predictions_df: pd.DataFrame) -> Dict:
+        """Sync maintenance predictions with Maximo work orders"""
+        if not self.maximo_connected or not self.maximo_sync_enabled:
+            return {'error': 'Maximo not connected or sync disabled'}
+        
+        sync_results = {
+            'work_orders_created': 0,
+            'assets_updated': 0,
+            'errors': []
+        }
+        
+        try:
+            for _, prediction in predictions_df.iterrows():
+                trainset_id = prediction['trainset_id']
+                
+                # Create work order for maintenance prediction
+                maintenance_data = {
+                    'description': f"Predictive maintenance for {trainset_id}",
+                    'type': 'PM',  # Preventive Maintenance
+                    'priority': self._map_prediction_to_priority(prediction['predicted_days']),
+                    'estimated_cost': prediction['predicted_cost'],
+                    'scheduled_start': self._calculate_scheduled_date(prediction['predicted_days']),
+                    'scheduled_finish': self._calculate_scheduled_date(prediction['predicted_days'], duration_hours=8),
+                    'location': 'Maintenance Depot'
+                }
+                
+                wo_id = self.maximo.create_maintenance_work_order(trainset_id, maintenance_data)
+                if wo_id:
+                    sync_results['work_orders_created'] += 1
+                
+                # Update asset status if maintenance is urgent
+                if prediction['predicted_days'] <= 7:
+                    self.maximo.update_asset_status(trainset_id, 'MAINTENANCE')
+                    sync_results['assets_updated'] += 1
+                    
+        except Exception as e:
+            sync_results['errors'].append(str(e))
+        
+        return sync_results
+    
+    def get_maximo_maintenance_history(self, trainset_id: str) -> List[Dict]:
+        """Get maintenance history from Maximo for a specific trainset"""
+        if not self.maximo_connected:
+            return []
+        
+        return self.maximo.get_asset_maintenance_history(trainset_id)
+    
+    def get_maximo_cost_analytics(self, trainset_id: str = None) -> Dict:
+        """Get maintenance cost analytics from Maximo"""
+        if not self.maximo_connected:
+            return {}
+        
+        return self.maximo.get_maintenance_cost_analytics(trainset_id)
+    
+    def _map_prediction_to_priority(self, predicted_days: float) -> str:
+        """Map predicted maintenance days to priority"""
+        if predicted_days <= 3:
+            return 'Critical'
+        elif predicted_days <= 7:
+            return 'High'
+        elif predicted_days <= 14:
+            return 'Medium'
+        else:
+            return 'Low'
+    
+    def _calculate_scheduled_date(self, predicted_days: float, duration_hours: int = 0) -> str:
+        """Calculate scheduled date based on prediction"""
+        scheduled_date = datetime.now() + timedelta(days=max(1, predicted_days - 2))
+        if duration_hours > 0:
+            scheduled_date += timedelta(hours=duration_hours)
+        return scheduled_date.strftime('%Y-%m-%d %H:%M')
         
     def _fallback_predictions(self, trainsets):
         """Fallback predictions when model is not trained"""

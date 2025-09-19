@@ -1,4 +1,5 @@
 from common_imports import *
+from ibm_maximo_integration import IBMMaximoIntegration
 
 def create_maintenance_tab():
     """Create the maintenance planning tab with integrated analytics"""
@@ -45,6 +46,12 @@ def create_maintenance_tab():
     
     system_manager = st.session_state.system_manager
     trainsets = st.session_state.trainsets
+    
+    # Initialize IBM Maximo integration
+    if 'maximo_integration' not in st.session_state:
+        st.session_state.maximo_integration = IBMMaximoIntegration()
+    
+    maximo = st.session_state.maximo_integration
 
     if 'maintenance_predictions' in st.session_state:
         predictions_df = st.session_state.maintenance_predictions
@@ -230,4 +237,66 @@ def create_maintenance_tab():
             )
     else:
         st.info("Run AI optimization to generate maintenance predictions")
+    
+    # IBM Maximo Integration Section
+    st.subheader("🔧 IBM Maximo Integration")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        if st.button("🔗 Connect to Maximo", key="connect_maximo_maintenance"):
+            if maximo.connect():
+                st.success("✅ Connected to IBM Maximo")
+                st.session_state.maximo_connected = True
+            else:
+                st.error("❌ Failed to connect to Maximo")
+                st.session_state.maximo_connected = False
+    
+    with col2:
+        if st.button("🔄 Sync Predictions", key="sync_predictions_maximo"):
+            if hasattr(system_manager.ml_model, 'sync_predictions_with_maximo'):
+                if 'maintenance_predictions' in st.session_state:
+                    with st.spinner("Syncing predictions with Maximo..."):
+                        sync_results = system_manager.ml_model.sync_predictions_with_maximo(
+                            st.session_state.maintenance_predictions
+                        )
+                        if 'error' not in sync_results:
+                            st.success(f"✅ Created {sync_results['work_orders_created']} work orders")
+                        else:
+                            st.error(f"❌ Sync failed: {sync_results['error']}")
+                else:
+                    st.warning("⚠️ No predictions available to sync")
+            else:
+                st.error("❌ Maximo integration not available")
+    
+    with col3:
+        if st.button("📊 Get Cost Analytics", key="get_maximo_analytics"):
+            with st.spinner("Fetching cost analytics from Maximo..."):
+                analytics = maximo.get_maintenance_cost_analytics()
+                if analytics:
+                    st.success("✅ Cost analytics retrieved")
+                    st.session_state.maximo_analytics = analytics
+                else:
+                    st.error("❌ Failed to get cost analytics")
+    
+    # Show Maximo status
+    if hasattr(maximo, 'is_connected') and maximo.is_connected:
+        st.info("✅ **IBM Maximo Connected** - Asset management and work order integration active")
+        
+        # Show cost analytics if available
+        if 'maximo_analytics' in st.session_state:
+            analytics = st.session_state.maximo_analytics
+            st.subheader("💰 Maximo Cost Analytics")
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Cost", f"₹{analytics.get('total_cost', 0):,.0f}")
+            with col2:
+                st.metric("Average Cost", f"₹{analytics.get('average_cost', 0):,.0f}")
+            with col3:
+                st.metric("Work Orders", analytics.get('work_order_count', 0))
+            with col4:
+                st.metric("Cost Trend", "📈" if analytics.get('cost_trend', [0])[-1] > analytics.get('cost_trend', [0])[0] else "📉")
+    else:
+        st.warning("⚠️ **IBM Maximo Disconnected** - Limited asset management capabilities")
 

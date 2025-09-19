@@ -12,6 +12,7 @@ from frontend.maps import create_map
 from frontend.timetable_f import create_timetable_tab
 from frontend.passenger_demand import create_passenger_demand_tab
 from frontend.train_tracking import create_train_tracking_tab
+from frontend.maximo_dashboard import create_maximo_integration_tab
 
 
 
@@ -823,9 +824,9 @@ def create_streamlit_frontend():
             status_icon = "🟢" if status['connected'] else "🔴"
             st.write(f"{status_icon} {source.replace('_', ' ').title()}")
     # Ultra-Modern Vibrant Dashboard Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
         "📊 Dashboard", "🚆 Fleet Status", "🔧 Maintenance", 
-        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable", "🚆 Passenger Demand", "🚆 Train Tracking"
+        "📢 Branding", "⚠️ Alerts", "📈 Analytics", "🗺️ Map", "🕒 Timetable", "🚆 Passenger Demand", "🚆 Train Tracking", "🔧 IBM Maximo"
     ])
     with tab1:
         create_dashboard_tab()
@@ -847,3 +848,5 @@ def create_streamlit_frontend():
         create_passenger_demand_tab()
     with tab10:
         create_train_tracking_tab()
+    with tab11:
+        create_maximo_integration_tab()

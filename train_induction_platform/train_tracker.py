@@ -6,6 +6,7 @@ import time
 from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
+from ibm_maximo_integration import IBMMaximoIntegration, MaximoDataAdapter
 
 class TrainStatus(Enum):
     """Train status enumeration"""
@@ -45,6 +46,11 @@ class TrainTracker:
         self.tracking_active = False
         self.tracking_thread = None
         self.collision_detector = CollisionDetector()
+        
+        # Initialize IBM Maximo integration
+        self.maximo = IBMMaximoIntegration()
+        self.maximo_connected = False
+        self.maximo_sync_enabled = True
         
     def _load_station_coordinates(self) -> Dict[str, Tuple[float, float]]:
         """Load station coordinates for Kochi Metro"""
@@ -100,8 +106,14 @@ class TrainTracker:
         }
     
     def initialize_trains_from_timetable(self, timetable) -> None:
-        """Initialize train positions from timetable data"""
+        """Initialize train positions from timetable data with Maximo integration"""
         self.trains.clear()
+        
+        # Connect to Maximo if not already connected
+        if self.maximo_sync_enabled and not self.maximo_connected:
+            self.maximo_connected = self.maximo.connect()
+            if self.maximo_connected:
+                print("✅ Connected to IBM Maximo for train tracking")
         
         # Handle both list and dictionary formats
         if isinstance(timetable, list):
@@ -122,6 +134,10 @@ class TrainTracker:
             for train_data in trains_in_slot:
                 trainset_id = train_data['trainset_id']
                 route = train_data['route']
+                
+                # Sync train data with Maximo if connected
+                if self.maximo_connected and self.maximo_sync_enabled:
+                    self._sync_train_with_maximo(trainset_id, train_data)
                 
                 # Get route stations
                 stations = self.route_segments.get(route, [])
@@ -298,6 +314,83 @@ class TrainTracker:
         trains_list = list(self.trains.values())
         self.collision_detector.check_collisions(trains_list)
         return self.collision_detector.get_collision_alerts()
+    
+    def _sync_train_with_maximo(self, trainset_id: str, train_data: Dict) -> None:
+        """Sync individual train data with Maximo"""
+        try:
+            # Create or update asset in Maximo
+            asset_id = self.maximo.create_trainset_asset(train_data)
+            
+            if asset_id:
+                # Update asset status based on operational status
+                status = train_data.get('operational_status', 'Available')
+                self.maximo.update_asset_status(asset_id, status)
+                
+                # Create work orders for maintenance needs
+                job_cards_open = train_data.get('job_cards_open', 0)
+                if job_cards_open > 0:
+                    maintenance_data = {
+                        'description': f'Maintenance required for {trainset_id}',
+                        'type': 'CM',  # Corrective Maintenance
+                        'priority': 'High' if job_cards_open > 2 else 'Medium',
+                        'estimated_cost': self.maximo._calculate_maintenance_cost(train_data),
+                        'location': train_data.get('depot', 'Maintenance Depot')
+                    }
+                    self.maximo.create_maintenance_work_order(asset_id, maintenance_data)
+                    
+        except Exception as e:
+            print(f"❌ Error syncing train {trainset_id} with Maximo: {e}")
+    
+    def enable_maximo_sync(self) -> bool:
+        """Enable Maximo synchronization"""
+        self.maximo_sync_enabled = True
+        if not self.maximo_connected:
+            self.maximo_connected = self.maximo.connect()
+        return self.maximo_connected
+    
+    def disable_maximo_sync(self) -> None:
+        """Disable Maximo synchronization"""
+        self.maximo_sync_enabled = False
+    
+    def get_maximo_status(self) -> Dict:
+        """Get Maximo integration status"""
+        return {
+            'connected': self.maximo_connected,
+            'sync_enabled': self.maximo_sync_enabled,
+            'last_sync': self.maximo.last_sync.isoformat() if self.maximo.last_sync else None,
+            'server_url': self.maximo.maximo_url
+        }
+    
+    def sync_all_trains_with_maximo(self) -> Dict:
+        """Sync all tracked trains with Maximo"""
+        if not self.maximo_connected or not self.maximo_sync_enabled:
+            return {'error': 'Maximo not connected or sync disabled'}
+        
+        sync_results = {
+            'trains_synced': 0,
+            'assets_updated': 0,
+            'work_orders_created': 0,
+            'errors': []
+        }
+        
+        for trainset_id, train_position in self.trains.items():
+            try:
+                # Convert train position to train data format
+                train_data = {
+                    'id': trainset_id,
+                    'depot': train_position.route,  # Use route as depot for now
+                    'operational_status': train_position.status.value.title(),
+                    'job_cards_open': 0,  # Default value
+                    'capacity': train_position.capacity
+                }
+                
+                self._sync_train_with_maximo(trainset_id, train_data)
+                sync_results['trains_synced'] += 1
+                
+            except Exception as e:
+                sync_results['errors'].append(f"Error syncing {trainset_id}: {str(e)}")
+        
+        return sync_results
 
 class CollisionDetector:
     """Detects and prevents train collisions"""
