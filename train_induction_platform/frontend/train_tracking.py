@@ -1,5 +1,6 @@
 from common_imports import *
 from train_tracker import TrainTracker, TrainStatus, CollisionDetector, TimetableAnalyzer
+from mock_train_tracking_data import MockTrainTrackingDataGenerator, generate_timetable_data, generate_tracking_data
 import folium
 from folium import plugins
 import streamlit_folium as st_folium
@@ -121,20 +122,41 @@ def create_train_tracking_tab():
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        if st.button("🚀 Initialize Tracking", type="primary"):
-            # Get timetable from session state or generate one
-            timetable = st.session_state.get('timetable', [])
-            
-            if not timetable:
-                # Generate timetable data if not available
-                st.info("📅 Generating timetable data...")
-                timetable = generate_timetable_data()
-                st.session_state.timetable = timetable
-                st.success(f"✅ Generated timetable with {len(timetable)} time slots")
-            
-            # Initialize trains from timetable
-            tracker.initialize_trains_from_timetable(timetable)
-            st.success(f"✅ Initialized {len(tracker.trains)} trains from timetable")
+        if st.button("🚀 Initialize Tracking", type="primary", key="init_tracking_btn"):
+            with st.spinner("🚆 Initializing train tracking system..."):
+                # Get timetable from session state or generate one
+                timetable = st.session_state.get('timetable', [])
+                
+                if not timetable:
+                    # Generate comprehensive timetable data
+                    st.info("📅 Generating comprehensive timetable data...")
+                    generator = MockTrainTrackingDataGenerator()
+                    timetable = generator.generate_timetable_data()
+                    st.session_state.timetable = timetable
+                    st.session_state.mock_generator = generator
+                    st.success(f"✅ Generated timetable with {len(timetable)} time slots")
+                
+                # Initialize trains from timetable
+                tracker.initialize_trains_from_timetable(timetable)
+                
+                # Generate real-time tracking data
+                tracking_data = generate_tracking_data()
+                st.session_state.tracking_data = tracking_data
+                
+                # Start tracking automatically
+                tracker.start_tracking()
+                
+                st.success(f"✅ Initialized {len(tracker.trains)} trains from timetable")
+                st.success("🚆 Real-time tracking started automatically")
+                
+                # Show summary
+                col_a, col_b, col_c = st.columns(3)
+                with col_a:
+                    st.metric("Active Trains", len(tracker.trains))
+                with col_b:
+                    st.metric("Time Slots", len(timetable))
+                with col_c:
+                    st.metric("Routes", len(set(train.route for train in tracker.trains.values())))
     
     with col2:
         if st.button("▶️ Start Tracking"):
@@ -168,7 +190,7 @@ def create_train_tracking_tab():
         create_timetable_analysis_section(analyzer)
 
 def create_live_map_section(tracker: TrainTracker):
-    """Create the live map visualization"""
+    """Create the enhanced live map visualization"""
     st.subheader("🗺️ Live Train Tracking Map")
     
     # Get current train positions
@@ -186,17 +208,41 @@ def create_live_map_section(tracker: TrainTracker):
         tiles='OpenStreetMap'
     )
     
-    # Add station markers
+    # Add station markers with enhanced information
     station_coords = tracker.station_coordinates
     for station_name, (lat, lon) in station_coords.items():
+        # Count trains at this station
+        trains_at_station = [t for t in trains.values() if t.current_station == station_name]
+        
         folium.Marker(
             [lat, lon],
-            popup=f"<b>{station_name}</b><br>Metro Station",
+            popup=f"""
+            <b>🚉 {station_name}</b><br>
+            <b>Trains at Station:</b> {len(trains_at_station)}<br>
+            <b>Coordinates:</b> {lat:.4f}, {lon:.4f}
+            """,
             icon=folium.Icon(color='blue', icon='train', prefix='fa'),
-            tooltip=station_name
+            tooltip=f"{station_name} ({len(trains_at_station)} trains)"
         ).add_to(m)
     
-    # Add train markers
+    # Add route lines
+    routes = tracker.route_segments
+    for route_name, stations in routes.items():
+        route_coords = []
+        for station in stations:
+            if station in station_coords:
+                route_coords.append([station_coords[station][0], station_coords[station][1]])
+        
+        if route_coords:
+            folium.PolyLine(
+                route_coords,
+                color='blue' if 'Aluva' in route_name else 'red',
+                weight=3,
+                opacity=0.7,
+                popup=f"<b>{route_name}</b> Route"
+            ).add_to(m)
+    
+    # Add train markers with enhanced information
     for train_id, train in trains.items():
         # Determine marker color based on status
         color_map = {
@@ -210,42 +256,95 @@ def create_live_map_section(tracker: TrainTracker):
         
         color = color_map.get(train.status, 'blue')
         
-        # Create popup content
-        popup_content = f"""
-        <div style="width: 250px;">
-            <h4>🚆 Train {train_id}</h4>
-            <p><b>Status:</b> {train.status.value.title()}</p>
-            <p><b>Current Station:</b> {train.current_station}</p>
-            <p><b>Next Station:</b> {train.next_station}</p>
-            <p><b>Route:</b> {train.route}</p>
-            <p><b>Speed:</b> {train.speed:.1f} km/h</p>
-            <p><b>Passengers:</b> {train.passenger_count}/{train.capacity}</p>
-            <p><b>Delay:</b> {train.delay_minutes} min</p>
-            <p><b>Direction:</b> {train.direction}</p>
-            <p><b>Last Update:</b> {train.last_update.strftime('%H:%M:%S')}</p>
-        </div>
-        """
+        # Create custom icon based on status
+        icon_map = {
+            TrainStatus.STATIONARY: 'pause',
+            TrainStatus.MOVING: 'play',
+            TrainStatus.ARRIVING: 'arrow-down',
+            TrainStatus.DEPARTING: 'arrow-up',
+            TrainStatus.DELAYED: 'exclamation-triangle',
+            TrainStatus.MAINTENANCE: 'wrench'
+        }
         
+        icon = icon_map.get(train.status, 'train')
+        
+        # Calculate passenger load percentage
+        load_percentage = (train.passenger_count / train.capacity) * 100
+        
+        # Add train marker with enhanced popup
         folium.Marker(
             [train.position_lat, train.position_lon],
-            popup=folium.Popup(popup_content, max_width=300),
-            icon=folium.Icon(color=color, icon='train', prefix='fa'),
-            tooltip=f"Train {train_id} - {train.status.value.title()}"
+            popup=f"""
+            <div style="width: 300px;">
+                <h3>🚆 {train_id}</h3>
+                <table style="width: 100%; font-size: 12px;">
+                    <tr><td><b>Status:</b></td><td>{train.status.value.title()}</td></tr>
+                    <tr><td><b>Current Station:</b></td><td>{train.current_station}</td></tr>
+                    <tr><td><b>Next Station:</b></td><td>{train.next_station}</td></tr>
+                    <tr><td><b>Route:</b></td><td>{train.route}</td></tr>
+                    <tr><td><b>Speed:</b></td><td>{train.speed:.1f} km/h</td></tr>
+                    <tr><td><b>Passengers:</b></td><td>{train.passenger_count}/{train.capacity} ({load_percentage:.1f}%)</td></tr>
+                    <tr><td><b>Delay:</b></td><td>{train.delay_minutes} min</td></tr>
+                    <tr><td><b>Direction:</b></td><td>{train.direction.title()}</td></tr>
+                    <tr><td><b>Last Update:</b></td><td>{train.last_update.strftime('%H:%M:%S')}</td></tr>
+                </table>
+            </div>
+            """,
+            icon=folium.Icon(color=color, icon=icon, prefix='fa'),
+            tooltip=f"{train_id} - {train.status.value.title()} - {load_percentage:.0f}% full"
         ).add_to(m)
     
-    # Add route lines
-    add_route_lines(m, tracker)
+    # Add legend
+    legend_html = '''
+    <div style="position: fixed; 
+                bottom: 50px; left: 50px; width: 200px; height: 120px; 
+                background-color: white; border:2px solid grey; z-index:9999; 
+                font-size:14px; padding: 10px">
+    <p><b>🚆 Train Status Legend</b></p>
+    <p><i class="fa fa-pause" style="color:green"></i> Stationary</p>
+    <p><i class="fa fa-play" style="color:red"></i> Moving</p>
+    <p><i class="fa fa-arrow-down" style="color:orange"></i> Arriving</p>
+    <p><i class="fa fa-arrow-up" style="color:yellow"></i> Departing</p>
+    <p><i class="fa fa-exclamation-triangle" style="color:purple"></i> Delayed</p>
+    </div>
+    '''
+    m.get_root().html.add_child(folium.Element(legend_html))
     
-    # Add collision alerts
-    add_collision_alerts(m, tracker)
+    # Display the map
+    st_folium.st_folium(m, width=700, height=500)
     
-    # Display map
-    st_folium.st_folium(m, width=1000, height=600, returned_objects=[])
-    
-    # Map controls
-    st.subheader("🎛️ Map Controls")
-    
+    # Add map controls
     col1, col2, col3 = st.columns(3)
+    with col1:
+        if st.button("🔄 Refresh Map", key="refresh_map"):
+            st.rerun()
+    
+    with col2:
+        if st.button("📍 Center Map", key="center_map"):
+            st.rerun()
+    
+    with col3:
+        if st.button("📊 Show Statistics", key="show_stats"):
+            st.rerun()
+    
+    # Show map statistics
+    st.subheader("📊 Map Statistics")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        st.metric("Active Trains", len(trains))
+    
+    with col2:
+        moving_trains = len([t for t in trains.values() if t.status == TrainStatus.MOVING])
+        st.metric("Moving Trains", moving_trains)
+    
+    with col3:
+        delayed_trains = len([t for t in trains.values() if t.delay_minutes > 0])
+        st.metric("Delayed Trains", delayed_trains)
+    
+    with col4:
+        total_passengers = sum(t.passenger_count for t in trains.values())
+        st.metric("Total Passengers", total_passengers)
     
     with col1:
         show_stations = st.checkbox("Show Stations", value=True)
