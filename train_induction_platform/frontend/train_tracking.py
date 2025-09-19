@@ -490,28 +490,81 @@ def create_timetable_analysis_section(analyzer: TimetableAnalyzer):
     
     # Show first few time slots as example
     st.write("**Sample Time Slots:**")
-    sample_slots = timetable[:5]  # Show first 5 slots
     
-    for slot in sample_slots:
-        with st.expander(f"🕒 {slot['time_slot']} - {slot['total_trains']} trains ({'Peak' if slot['peak_hour'] else 'Normal'})"):
-            col1, col2, col3 = st.columns(3)
+    # Handle both list and dictionary formats for display
+    if isinstance(timetable, list):
+        sample_slots = timetable[:5]  # Show first 5 slots from list
+        slot_keys = [f"Slot {i+1}" for i in range(len(sample_slots))]
+    else:
+        # If it's a dictionary, convert to list for display
+        sample_slots = list(timetable.values())[:5]
+        slot_keys = list(timetable.keys())[:5]
+    
+    for i, slot in enumerate(sample_slots):
+        time_slot = slot_keys[i] if i < len(slot_keys) else f"Slot {i+1}"
+        
+        # Handle different data structures
+        if isinstance(slot, dict):
+            # For AI optimizer output
+            total_trains = len(slot.get('trains', []))
+            is_peak = slot.get('is_peak_hour', False)
+            predicted_demand = slot.get('predicted_demand', 0)
             
-            with col1:
-                st.write(f"**Trains:** {slot['total_trains']}")
-                st.write(f"**Demand:** {slot['demand_level']}")
-            
-            with col2:
-                st.write(f"**Weather:** {slot['weather_condition']}")
-                st.write(f"**Temperature:** {slot['temperature']}°C")
-            
-            with col3:
-                st.write(f"**Humidity:** {slot['humidity']}%")
-                st.write(f"**Peak Hour:** {'Yes' if slot['peak_hour'] else 'No'}")
-            
-            # Show train details
-            st.write("**Train Details:**")
-            train_df = pd.DataFrame(slot['trains'])
-            st.dataframe(train_df[['trainset_id', 'route', 'capacity', 'ai_score', 'delay_minutes']], use_container_width=True)
+            with st.expander(f"🕒 {time_slot} - {total_trains} trains ({'Peak' if is_peak else 'Normal'})"):
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.write(f"**Trains:** {total_trains}")
+                    st.write(f"**Demand:** {predicted_demand}")
+                
+                with col2:
+                    st.write(f"**Capacity:** {slot.get('total_capacity', 0)}")
+                    st.write(f"**Avg Health:** {slot.get('avg_health_score', 0):.1f}")
+                
+                with col3:
+                    st.write(f"**Peak Hour:** {'Yes' if is_peak else 'No'}")
+                    st.write(f"**Routes:** {len(slot.get('route_assignments', {}))}")
+                
+                # Show train details if available
+                if slot.get('trains'):
+                    st.write("**Train Details:**")
+                    train_data = []
+                    for train in slot['trains']:
+                        train_data.append({
+                            'Train ID': train.get('trainset_id', 'Unknown'),
+                            'Depot': train.get('depot', 'Unknown'),
+                            'Health Score': f"{slot.get('avg_health_score', 0):.1f}",
+                            'Status': train.get('operational_status', 'Unknown')
+                        })
+                    
+                    if train_data:
+                        train_df = pd.DataFrame(train_data)
+                        st.dataframe(train_df, use_container_width=True)
+        else:
+            # For legacy format with time_slot field
+            with st.expander(f"🕒 {slot.get('time_slot', time_slot)} - {slot.get('total_trains', 0)} trains ({'Peak' if slot.get('peak_hour', False) else 'Normal'})"):
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    st.write(f"**Trains:** {slot.get('total_trains', 0)}")
+                    st.write(f"**Demand:** {slot.get('demand_level', 'N/A')}")
+                
+                with col2:
+                    st.write(f"**Weather:** {slot.get('weather_condition', 'N/A')}")
+                    st.write(f"**Temperature:** {slot.get('temperature', 'N/A')}°C")
+                
+                with col3:
+                    st.write(f"**Humidity:** {slot.get('humidity', 'N/A')}%")
+                    st.write(f"**Peak Hour:** {'Yes' if slot.get('peak_hour', False) else 'No'}")
+                
+                # Show train details
+                if slot.get('trains'):
+                    st.write("**Train Details:**")
+                    train_df = pd.DataFrame(slot['trains'])
+                    if 'trainset_id' in train_df.columns:
+                        display_cols = ['trainset_id', 'route', 'capacity', 'ai_score', 'delay_minutes']
+                        available_cols = [col for col in display_cols if col in train_df.columns]
+                        st.dataframe(train_df[available_cols], use_container_width=True)
     
     # Analysis summary
     st.subheader("📊 Analysis Summary")
@@ -588,7 +641,7 @@ def create_timetable_analysis_section(analyzer: TimetableAnalyzer):
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("📊 Export Timetable CSV"):
+        if st.button("📊 Export Timetable CSV", key="export_timetable_csv_tracking"):
             # Convert timetable to CSV format
             csv_data = []
             for slot in timetable:

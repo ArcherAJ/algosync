@@ -4,8 +4,8 @@ from folium import plugins
 import streamlit_folium as st_folium
 
 def create_map():
-    """Create an interactive Kochi Metro map"""
-    st.header("🗺️ Kochi Metro Interactive Map")
+    """Create a simple Kochi Metro map"""
+    st.header("🗺️ Kochi Metro Map")
     
     # Kochi Metro station coordinates
     stations = {

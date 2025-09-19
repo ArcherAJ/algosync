@@ -208,7 +208,7 @@ def create_timetable_tab():
         
         col1, col2 = st.columns(2)
         with col1:
-            if st.button("📊 Export Timetable CSV"):
+            if st.button("📊 Export Timetable CSV", key="export_timetable_csv_ai"):
                 csv = timetable_df.to_csv(index=False)
                 st.download_button(
                     label="Download Timetable CSV",
